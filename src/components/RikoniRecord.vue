@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-// import ImageSelector from '@/components/ImageSelector.vue';
+import ImageSelector from '@/components/ImageSelector.vue';
+import { IMAGES_BUCKET_URL } from '@/consts';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits(['close']);
@@ -9,10 +10,15 @@ const imageSelector = ref(false);
 const valid = ref(false);
 
 const closeDialog = () => {
+  selectedImage.value = null;
   emit('close');
 };
 
-const imgUrl = ref('');
+const selectedImage = ref<Image | null>(null);
+const onCloseImageSelector = (image: Image) => {
+  selectedImage.value = image;
+  imageSelector.value = false;
+};
 </script>
 
 <template>
@@ -50,9 +56,21 @@ const imgUrl = ref('');
                   選択
                 </v-btn>
               </v-col>
+              <v-col>
+                <v-btn v-if="selectedImage" @click="selectedImage = null">
+                  削除
+                </v-btn>
+              </v-col>
             </v-row>
 
-            <v-img :src="imgUrl"></v-img>
+            <v-row class="ma-4" align="center">
+              <v-img
+                v-if="selectedImage"
+                class="pa-0"
+                max-height="250"
+                :src="`${IMAGES_BUCKET_URL}/${selectedImage.path}`"
+              ></v-img>
+            </v-row>
           </v-container>
         </v-form>
       </v-card-text>
@@ -63,5 +81,5 @@ const imgUrl = ref('');
     </v-card>
   </v-dialog>
 
-  <!-- <ImageSelector :open="imageSelector" @close="imageSelector = false" /> -->
+  <ImageSelector :open="imageSelector" @close="onCloseImageSelector" />
 </template>
