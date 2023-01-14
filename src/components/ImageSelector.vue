@@ -5,11 +5,12 @@ import { IMAGES_BUCKET_URL } from '@/consts';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{
-  (e: 'close', selectedImageUrl: Image): void;
+  (e: 'close', selectedImage: Image | null): void;
 }>();
 
-const closeDialog = (selectedImage: Image) => {
-  emit('close', selectedImage);
+const closeDialog = () => {
+  emit('close', selectedImage.value);
+  selectedImage.value = null;
 };
 
 const iamges = ref<Image[]>([]);
@@ -27,6 +28,8 @@ const getImages = async () => {
   iamges.value = data as Image[];
 };
 getImages();
+
+const selectedImage = ref<Image | null>(null);
 </script>
 
 <template>
@@ -51,7 +54,7 @@ getImages();
                 cover
                 :src="`${IMAGES_BUCKET_URL}/${image.path}`"
                 v-ripple
-                @click="closeDialog(image)"
+                @click="(selectedImage = image), closeDialog()"
               >
                 <template v-slot:placeholder>
                   <v-row
@@ -59,10 +62,7 @@ getImages();
                     align="center"
                     justify="center"
                   >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey-lighten-5"
-                    ></v-progress-circular>
+                    <v-progress-circular indeterminate color="grey-lighten-5" />
                   </v-row>
                 </template>
               </v-img>

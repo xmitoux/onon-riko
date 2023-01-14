@@ -11,7 +11,7 @@ const emit = defineEmits(['close']);
 const startedAt = ref('');
 const finishedAt = ref('');
 
-const imageSelector = ref(false);
+const showImageSelector = ref(false);
 const valid = ref(false);
 
 const closeDialog = () => {
@@ -121,7 +121,7 @@ const recordRikoni = () => {
               <v-col>
                 <v-btn
                   prepend-icon="mdi-image-search"
-                  @click="imageSelector = true"
+                  @click="showImageSelector = true"
                 >
                   選択
                 </v-btn>
@@ -181,5 +181,5 @@ const recordRikoni = () => {
     </v-card>
   </v-dialog>
 
-  <ImageSelector :open="imageSelector" @close="onCloseImageSelector" />
+  <ImageSelector :open="showImageSelector" @close="onCloseImageSelector" />
 </template>
