@@ -1,104 +1,104 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import dayjs from 'dayjs';
-import { supabase } from '@/utils/supabase';
-import ImageSelector from '@/components/ImageSelector.vue';
-import { IMAGES_BUCKET_URL } from '@/consts';
+  import { ref } from 'vue';
+  import dayjs from 'dayjs';
+  import { supabase } from '@/utils/supabase';
+  import { IMAGES_BUCKET_URL } from '@/consts';
+  import ImageSelector from '@/components/ImageSelector.vue';
 
-const props = defineProps<{ open: boolean }>();
-const emit = defineEmits(['close']);
+  const props = defineProps<{ open: boolean }>();
+  const emit = defineEmits(['close']);
 
-const startedAt = ref('');
-const finishedAt = ref('');
+  const startedAt = ref('');
+  const finishedAt = ref('');
 
-const showImageSelector = ref(false);
-const valid = ref(false);
+  const showImageSelector = ref(false);
+  const valid = ref(false);
 
-const closeDialog = () => {
-  selectedImage.value = null;
-  emit('close');
-};
-
-const selectedImage = ref<Image | null>(null);
-const onCloseImageSelector = (image: Image | null) => {
-  if (image) {
-    selectedImage.value = image;
-  }
-
-  showImageSelector.value = false;
-};
-
-const rating = ref(0);
-const amount = ref(3);
-const bodyPosition = ref(1);
-const isDrunk = ref(false);
-const isSleepy = ref(false);
-const isPreExcited = ref(false);
-const doneWork = ref(false);
-const doneExercise = ref(false);
-const mealCondition = ref(1);
-
-type RikoniRecord = {
-  started_at: string;
-  finished_at: string;
-  do_time: number;
-  image_id: number;
-  do_interval: number;
-  rating: number;
-  amount: number;
-  body_position: number;
-  is_drunk: boolean;
-  is_sleepy: boolean;
-  is_pre_excited: boolean;
-  done_work: boolean;
-  done_exercise: boolean;
-  meal_condition: number;
-  item_id: number;
-};
-
-const insertRikoniRecord = async (record: RikoniRecord) => {
-  const { data, error } = await supabase
-    .from('rikoni_records')
-    .insert(record)
-    .select('*');
-
-  // TODO: エラー処理
-  if (!data) {
-    return;
-  }
-
-  closeDialog();
-};
-
-const recordRikoni = () => {
-  if (!selectedImage.value) {
-    return;
-  }
-
-  const start = dayjs(startedAt.value);
-  const finish = dayjs(finishedAt.value);
-  const doTime = finish.diff(start, 'minute');
-
-  const record: RikoniRecord = {
-    started_at: startedAt.value,
-    finished_at: finishedAt.value,
-    do_time: doTime,
-    image_id: selectedImage.value.id,
-    do_interval: 0, // TODO: どうやって出す？
-    rating: rating.value,
-    amount: amount.value,
-    is_drunk: isDrunk.value,
-    is_sleepy: isSleepy.value,
-    is_pre_excited: isPreExcited.value,
-    done_work: doneWork.value,
-    done_exercise: doneExercise.value,
-    meal_condition: mealCondition.value,
-    body_position: bodyPosition.value,
-    item_id: 1,
+  const closeDialog = () => {
+    selectedImage.value = null;
+    emit('close');
   };
 
-  insertRikoniRecord(record);
-};
+  const selectedImage = ref<Image | null>(null);
+  const onCloseImageSelector = (image: Image | null) => {
+    if (image) {
+      selectedImage.value = image;
+    }
+
+    showImageSelector.value = false;
+  };
+
+  const rating = ref(0);
+  const amount = ref(3);
+  const bodyPosition = ref(1);
+  const isDrunk = ref(false);
+  const isSleepy = ref(false);
+  const isPreExcited = ref(false);
+  const doneWork = ref(false);
+  const doneExercise = ref(false);
+  const mealCondition = ref(1);
+
+  type RikoniRecord = {
+    started_at: string;
+    finished_at: string;
+    do_time: number;
+    image_id: number;
+    do_interval: number;
+    rating: number;
+    amount: number;
+    body_position: number;
+    is_drunk: boolean;
+    is_sleepy: boolean;
+    is_pre_excited: boolean;
+    done_work: boolean;
+    done_exercise: boolean;
+    meal_condition: number;
+    item_id: number;
+  };
+
+  const insertRikoniRecord = async (record: RikoniRecord) => {
+    const { data, error } = await supabase
+      .from('rikoni_records')
+      .insert(record)
+      .select('*');
+
+    // TODO: エラー処理
+    if (!data) {
+      return;
+    }
+
+    closeDialog();
+  };
+
+  const recordRikoni = () => {
+    if (!selectedImage.value) {
+      return;
+    }
+
+    const start = dayjs(startedAt.value);
+    const finish = dayjs(finishedAt.value);
+    const doTime = finish.diff(start, 'minute');
+
+    const record: RikoniRecord = {
+      started_at: startedAt.value,
+      finished_at: finishedAt.value,
+      do_time: doTime,
+      image_id: selectedImage.value.id,
+      do_interval: 0, // TODO: どうやって出す？
+      rating: rating.value,
+      amount: amount.value,
+      is_drunk: isDrunk.value,
+      is_sleepy: isSleepy.value,
+      is_pre_excited: isPreExcited.value,
+      done_work: doneWork.value,
+      done_exercise: doneExercise.value,
+      meal_condition: mealCondition.value,
+      body_position: bodyPosition.value,
+      item_id: 1,
+    };
+
+    insertRikoniRecord(record);
+  };
 </script>
 
 <template>

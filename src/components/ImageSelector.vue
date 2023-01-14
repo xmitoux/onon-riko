@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { supabase } from '@/utils/supabase';
-import { IMAGES_BUCKET_URL } from '@/consts';
+  import { ref } from 'vue';
+  import { supabase } from '@/utils/supabase';
+  import { IMAGES_BUCKET_URL } from '@/consts';
 
-const props = defineProps<{ open: boolean }>();
-const emit = defineEmits<{
-  (e: 'close', selectedImage: Image | null): void;
-}>();
+  const props = defineProps<{ open: boolean }>();
+  const emit = defineEmits<{
+    (e: 'close', selectedImage: Image | null): void;
+  }>();
 
-const closeDialog = () => {
-  emit('close', selectedImage.value);
-  selectedImage.value = null;
-};
+  const closeDialog = () => {
+    emit('close', selectedImage.value);
+    selectedImage.value = null;
+  };
 
-const iamges = ref<Image[]>([]);
-const getImages = async () => {
-  const { data } = await supabase
-    .from('images')
-    .select('*')
-    .order('id', { ascending: true });
+  const iamges = ref<Image[]>([]);
+  const getImages = async () => {
+    const { data } = await supabase
+      .from('images')
+      .select('*')
+      .order('id', { ascending: true });
 
-  // TODO: エラー処理
-  if (!data) {
-    return;
-  }
+    // TODO: エラー処理
+    if (!data) {
+      return;
+    }
 
-  iamges.value = data as Image[];
-};
-getImages();
+    iamges.value = data as Image[];
+  };
+  getImages();
 
-const selectedImage = ref<Image | null>(null);
+  const selectedImage = ref<Image | null>(null);
 </script>
 
 <template>

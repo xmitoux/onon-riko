@@ -1,111 +1,111 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { supabase } from '@/utils/supabase';
+  import { ref } from 'vue';
+  import { supabase } from '@/utils/supabase';
 
-const props = defineProps<{ open: boolean }>();
-const emit = defineEmits(['close']);
+  const props = defineProps<{ open: boolean }>();
+  const emit = defineEmits(['close']);
 
-const closeDialog = () => {
-  deleteImage();
-  emit('close');
-};
+  const closeDialog = () => {
+    deleteImage();
+    emit('close');
+  };
 
-const uploader = ref<HTMLInputElement>();
-const selectImage = () => {
-  uploader.value?.click();
-};
+  const uploader = ref<HTMLInputElement>();
+  const selectImage = () => {
+    uploader.value?.click();
+  };
 
-const uploadFile = ref<File | null>(null);
-const attachedImage = ref<string | null>(null);
-const onChangeImage = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const files = target.files;
-  if (!files?.length) {
-    return;
-  }
-
-  const file = files[0];
-  uploadFile.value = file;
-
-  const fileReader = new FileReader();
-  fileReader.onload = (fileEvent) => {
-    if (!fileEvent.target) {
+  const uploadFile = ref<File | null>(null);
+  const attachedImage = ref<string | null>(null);
+  const onChangeImage = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
+    if (!files?.length) {
       return;
     }
 
-    attachedImage.value = fileEvent.target.result as string;
+    const file = files[0];
+    uploadFile.value = file;
 
-    // 画像削除後に同じファイルを上げられるようにする
-    target.value = '';
+    const fileReader = new FileReader();
+    fileReader.onload = (fileEvent) => {
+      if (!fileEvent.target) {
+        return;
+      }
+
+      attachedImage.value = fileEvent.target.result as string;
+
+      // 画像削除後に同じファイルを上げられるようにする
+      target.value = '';
+    };
+    fileReader.readAsDataURL(uploadFile.value);
   };
-  fileReader.readAsDataURL(uploadFile.value);
-};
 
-const uploadedImagePath = ref('');
-const uploadImage = async () => {
-  if (!uploadFile.value) {
-    // TODO: 警告ダイアログ
-    console.log('画像を選択してください');
-    return;
-  }
+  const uploadedImagePath = ref('');
+  const uploadImage = async () => {
+    if (!uploadFile.value) {
+      // TODO: 警告ダイアログ
+      console.log('画像を選択してください');
+      return;
+    }
 
-  const { data, error } = await supabase.storage
-    .from('riko-images')
-    .upload(uploadFile.value.name, uploadFile.value)
-    .catch();
+    const { data, error } = await supabase.storage
+      .from('riko-images')
+      .upload(uploadFile.value.name, uploadFile.value)
+      .catch();
 
-  // TODO: エラー処理 409: 重複画像
-  console.log(data);
-  console.log(error);
+    // TODO: エラー処理 409: 重複画像
+    console.log(data);
+    console.log(error);
 
-  if (!data) {
-    return;
-  }
+    if (!data) {
+      return;
+    }
 
-  uploadedImagePath.value = data.path;
+    uploadedImagePath.value = data.path;
 
-  const { data: data2, error: error2 } = await supabase
-    .from('images')
-    .insert({ path: uploadedImagePath.value, is_fav: fav.value })
-    .select('*');
+    const { data: data2, error: error2 } = await supabase
+      .from('images')
+      .insert({ path: uploadedImagePath.value, is_fav: fav.value })
+      .select('*');
 
-  // TODO: エラー処理\
-  console.log(data2);
-  console.log(error2);
+    // TODO: エラー処理\
+    console.log(data2);
+    console.log(error2);
 
-  closeDialog();
-};
+    closeDialog();
+  };
 
-const deleteImage = () => {
-  uploadFile.value = null;
-  attachedImage.value = null;
-};
+  const deleteImage = () => {
+    uploadFile.value = null;
+    attachedImage.value = null;
+  };
 
-const fav = ref(false);
+  const fav = ref(false);
 
-type ImageTag = {
-  id: number;
-  name: string;
-};
-const imageTags = ref<ImageTag[]>([]);
-const getTags = async () => {
-  const { data, error } = await supabase
-    .from('image_tags')
-    .select('*')
-    .order('display_order');
+  type ImageTag = {
+    id: number;
+    name: string;
+  };
+  const imageTags = ref<ImageTag[]>([]);
+  const getTags = async () => {
+    const { data, error } = await supabase
+      .from('image_tags')
+      .select('*')
+      .order('display_order');
 
-  // TODO: エラー処理
-  console.log(data);
-  console.log(error);
+    // TODO: エラー処理
+    console.log(data);
+    console.log(error);
 
-  if (!data) {
-    return;
-  }
+    if (!data) {
+      return;
+    }
 
-  imageTags.value = data as ImageTag[];
-};
+    imageTags.value = data as ImageTag[];
+  };
 
-getTags();
+  getTags();
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ImageUploader from '@/components/ImageUploader.vue';
-const imageUploader = ref(false);
+  import { ref } from 'vue';
+  import ImageUploader from '@/components/ImageUploader.vue';
+  const imageUploader = ref(false);
 </script>
 
 <template>
