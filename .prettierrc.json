@@ -2,5 +2,6 @@
   "singleQuote": true,
   "tabWidth": 2,
   "printWidth": 80,
-  "vueIndentScriptAndStyle": false
+  "vueIndentScriptAndStyle": true,
+  "htmlWhitespaceSensitivity": "ignore"
 }
