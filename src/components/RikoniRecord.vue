@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 // import ImageSelector from '@/components/ImageSelector.vue';
-import ImageUploader from '@/components/ImageUploader.vue';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits(['close']);
 
 const imageSelector = ref(false);
-const imageUploader = ref(false);
 const valid = ref(false);
 
 const closeDialog = () => {
@@ -52,15 +50,6 @@ const imgUrl = ref('');
                   選択
                 </v-btn>
               </v-col>
-
-              <v-col>
-                <v-btn
-                  prepend-icon="mdi-image-plus"
-                  @click="imageUploader = true"
-                >
-                  登録
-                </v-btn>
-              </v-col>
             </v-row>
 
             <v-img :src="imgUrl"></v-img>
@@ -75,5 +64,4 @@ const imgUrl = ref('');
   </v-dialog>
 
   <!-- <ImageSelector :open="imageSelector" @close="imageSelector = false" /> -->
-  <ImageUploader :open="imageUploader" @close="imageUploader = false" />
 </template>

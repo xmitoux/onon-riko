@@ -7,23 +7,23 @@
     </v-app-bar>
 
     <v-bottom-navigation grow :elevation="3">
-      <v-btn value="recent">
+      <v-btn to="/">
         <v-icon icon="mdi-home" />
       </v-btn>
 
-      <v-btn value="nearby">
+      <v-btn>
         <v-icon icon="mdi-calendar-month" />
       </v-btn>
 
-      <v-btn value="favorites">
+      <v-btn>
         <v-icon icon="mdi-heart" />
       </v-btn>
 
-      <v-btn value="nearby">
+      <v-btn>
         <v-icon icon="mdi-chart-bar" />
       </v-btn>
 
-      <v-btn value="favorites">
+      <v-btn to="/settings">
         <v-icon icon="mdi-cog" />
       </v-btn>
     </v-bottom-navigation>
