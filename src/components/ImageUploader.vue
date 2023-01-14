@@ -41,8 +41,10 @@ const onChangeImage = (e: Event) => {
   fileReader.readAsDataURL(uploadFile.value);
 };
 
+const uploadedImagePath = ref('');
 const uploadImage = async () => {
   if (!uploadFile.value) {
+    // TODO: 警告ダイアログ
     console.log('画像を選択してください');
     return;
   }
@@ -52,8 +54,24 @@ const uploadImage = async () => {
     .upload(uploadFile.value.name, uploadFile.value)
     .catch();
 
+  // TODO: エラー処理 409: 重複画像
   console.log(data);
   console.log(error);
+
+  if (!data) {
+    return;
+  }
+
+  uploadedImagePath.value = data.path;
+
+  const { data: data2, error: error2 } = await supabase
+    .from('images')
+    .insert({ path: uploadedImagePath.value, is_fav: fav.value })
+    .select('*');
+
+  // TODO: エラー処理\
+  console.log(data2);
+  console.log(error2);
 
   closeDialog();
 };
