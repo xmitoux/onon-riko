@@ -1,15 +1,26 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import ImageSelector from '@/components/ImageSelector.vue';
 
-  const props = defineProps<{ open: boolean }>();
+  const props = defineProps<{
+    open: boolean;
+    auto?: { startedAt: string; finishedAt: string };
+  }>();
+
   const emit = defineEmits(['close']);
 
   const startedAt = ref('');
   const finishedAt = ref('');
+
+  watch(props, () => {
+    if (props.auto) {
+      startedAt.value = props.auto.startedAt.toString();
+      finishedAt.value = props.auto.finishedAt.toString();
+    }
+  });
 
   const showImageSelector = ref(false);
   const valid = ref(false);
@@ -66,8 +77,6 @@
     if (!data) {
       return;
     }
-
-    closeDialog();
   };
 
   const recordRikoni = () => {
@@ -98,6 +107,8 @@
     };
 
     insertRikoniRecord(record);
+
+    closeDialog();
   };
 </script>
 
