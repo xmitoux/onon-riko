@@ -20,13 +20,23 @@ const closeDialog = () => {
 };
 
 const selectedImage = ref<Image | null>(null);
-const onCloseImageSelector = (image: Image) => {
-  selectedImage.value = image;
-  imageSelector.value = false;
+const onCloseImageSelector = (image: Image | null) => {
+  if (image) {
+    selectedImage.value = image;
+  }
+
+  showImageSelector.value = false;
 };
 
 const rating = ref(0);
-const amount = ref(0);
+const amount = ref(3);
+const bodyPosition = ref(1);
+const isDrunk = ref(false);
+const isSleepy = ref(false);
+const isPreExcited = ref(false);
+const doneWork = ref(false);
+const doneExercise = ref(false);
+const mealCondition = ref(1);
 
 type RikoniRecord = {
   started_at: string;
@@ -36,13 +46,13 @@ type RikoniRecord = {
   do_interval: number;
   rating: number;
   amount: number;
+  body_position: number;
   is_drunk: boolean;
   is_sleepy: boolean;
   is_pre_excited: boolean;
   done_work: boolean;
   done_exercise: boolean;
   meal_condition: number;
-  body_position: number;
   item_id: number;
 };
 
@@ -77,13 +87,13 @@ const recordRikoni = () => {
     do_interval: 0, // TODO: どうやって出す？
     rating: rating.value,
     amount: amount.value,
-    is_drunk: false,
-    is_sleepy: false,
-    is_pre_excited: false,
-    done_work: false,
-    done_exercise: false,
-    meal_condition: 1,
-    body_position: 1,
+    is_drunk: isDrunk.value,
+    is_sleepy: isSleepy.value,
+    is_pre_excited: isPreExcited.value,
+    done_work: doneWork.value,
+    done_exercise: doneExercise.value,
+    meal_condition: mealCondition.value,
+    body_position: bodyPosition.value,
     item_id: 1,
   };
 
@@ -167,6 +177,57 @@ const recordRikoni = () => {
                   <v-radio label="普通" :value="3"></v-radio>
                   <v-radio label="ちょっと少ない" :value="2"></v-radio>
                   <v-radio label="少ない" :value="1"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+
+            <v-row class="ma-1">
+              <v-col cols="4">体位</v-col>
+              <v-col>
+                <v-radio-group v-model="bodyPosition">
+                  <v-radio label="座位" :value="1"></v-radio>
+                  <v-radio label="伏位" :value="2"></v-radio>
+                  <v-radio label="立位" :value="3"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+
+            <v-row class="ma-1" align="center">
+              <v-col cols="4">飲酒</v-col>
+              <v-col><v-switch color="blue" inset v-model="isDrunk" /></v-col>
+            </v-row>
+
+            <v-row class="ma-1" align="center">
+              <v-col cols="4">眠気</v-col>
+              <v-col><v-switch color="blue" inset v-model="isSleepy" /></v-col>
+            </v-row>
+
+            <v-row class="ma-1" align="center">
+              <v-col cols="4">事前の興奮</v-col>
+              <v-col>
+                <v-switch color="blue" inset v-model="isPreExcited" />
+              </v-col>
+            </v-row>
+
+            <v-row class="ma-1" align="center">
+              <v-col cols="4">運動</v-col>
+              <v-col><v-switch color="blue" inset v-model="doneWork" /></v-col>
+            </v-row>
+
+            <v-row class="ma-1" align="center">
+              <v-col cols="4">労働</v-col>
+              <v-col>
+                <v-switch color="blue" inset v-model="doneExercise" />
+              </v-col>
+            </v-row>
+
+            <v-row class="ma-1">
+              <v-col cols="4">食事状態</v-col>
+              <v-col>
+                <v-radio-group v-model="mealCondition">
+                  <v-radio label="食前" :value="1"></v-radio>
+                  <v-radio label="食間" :value="2"></v-radio>
+                  <v-radio label="食後" :value="3"></v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
