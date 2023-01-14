@@ -5,7 +5,6 @@ import { IMAGES_BUCKET_URL } from '@/consts';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{
-  // TODO: 画像IDも返す必要がある
   (e: 'close', selectedImageUrl: Image): void;
 }>();
 
@@ -21,9 +20,6 @@ const getImages = async () => {
     .order('id', { ascending: true });
 
   // TODO: エラー処理
-  console.log('getImages');
-  console.log(data);
-
   if (!data) {
     return;
   }
