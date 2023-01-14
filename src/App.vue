@@ -3,7 +3,7 @@
 <template>
   <v-app>
     <v-app-bar class="text-center" :elevation="1">
-      <v-app-bar-title>OnaOna</v-app-bar-title>
+      <v-app-bar-title>OnaOna(R)</v-app-bar-title>
     </v-app-bar>
 
     <v-bottom-navigation grow :elevation="3">

@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+// import ImageSelector from '@/components/ImageSelector.vue';
+import ImageUploader from '@/components/ImageUploader.vue';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits(['close']);
 
+const imageSelector = ref(false);
+const imageUploader = ref(false);
 const valid = ref(false);
 
 const closeDialog = () => {
   emit('close');
 };
+
+const imgUrl = ref('');
 </script>
 
 <template>
@@ -23,18 +29,41 @@ const closeDialog = () => {
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-container class="pa-0">
             <v-row class="ma-1" align="center" justify="space-between">
-              <v-col cols="4"> 開始日時 </v-col>
+              <v-col cols="4">開始日時</v-col>
               <v-col>
                 <v-text-field type="datetime-local"></v-text-field>
               </v-col>
             </v-row>
 
             <v-row class="ma-1" align="center" justify="space-between">
-              <v-col cols="4"> 終了日時 </v-col>
+              <v-col cols="4">終了日時</v-col>
               <v-col>
                 <v-text-field type="datetime-local"></v-text-field>
               </v-col>
             </v-row>
+
+            <v-row class="ma-1" align="center" justify="space-between">
+              <v-col cols="4">使用画像</v-col>
+              <v-col>
+                <v-btn
+                  prepend-icon="mdi-image-search"
+                  @click="imageSelector = true"
+                >
+                  選択
+                </v-btn>
+              </v-col>
+
+              <v-col>
+                <v-btn
+                  prepend-icon="mdi-image-plus"
+                  @click="imageUploader = true"
+                >
+                  登録
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-img :src="imgUrl"></v-img>
           </v-container>
         </v-form>
       </v-card-text>
@@ -44,4 +73,7 @@ const closeDialog = () => {
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- <ImageSelector :open="imageSelector" @close="imageSelector = false" /> -->
+  <ImageUploader :open="imageUploader" @close="imageUploader = false" />
 </template>
