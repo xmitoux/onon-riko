@@ -64,6 +64,30 @@ const deleteImage = () => {
 };
 
 const fav = ref(false);
+
+type ImageTag = {
+  id: number;
+  name: string;
+};
+const imageTags = ref<ImageTag[]>([]);
+const getTags = async () => {
+  const { data, error } = await supabase
+    .from('image_tags')
+    .select('*')
+    .order('display_order');
+
+  // TODO: エラー処理
+  console.log(data);
+  console.log(error);
+
+  if (!data) {
+    return;
+  }
+
+  imageTags.value = data as ImageTag[];
+};
+
+getTags();
 </script>
 
 <template>
@@ -98,6 +122,14 @@ const fav = ref(false);
           <v-row class="ma-4">
             <v-img v-if="attachedImage" :src="attachedImage" />
           </v-row>
+
+          <v-row>
+            <v-col cols="4">タグ選択</v-col>
+          </v-row>
+
+          <template v-for="imageTag in imageTags" :key="imageTag.id">
+            <v-checkbox hide-details :label="imageTag.name" />
+          </template>
 
           <v-row class="ma-1" align="center" justify="space-between">
             <v-col cols="4">お気に入り</v-col>
