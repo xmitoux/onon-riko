@@ -11,7 +11,7 @@
         <v-icon icon="mdi-home" />
       </v-btn>
 
-      <v-btn>
+      <v-btn to="/calendar">
         <v-icon icon="mdi-calendar-month" />
       </v-btn>
 

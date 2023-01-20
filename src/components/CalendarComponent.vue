@@ -1,0 +1,147 @@
+<script setup lang="ts">
+  import { ref, computed, watch } from 'vue';
+  import dayjs from 'dayjs';
+  import { supabase } from '@/utils/supabase';
+  import type { Calendar, CalendarWeek, RikoniRecord, Image } from '@/types';
+  import { IMAGES_BUCKET_URL } from '@/consts';
+
+  const currentDate = ref(dayjs());
+  const currentMonth = computed(() => currentDate.value.get('month'));
+
+  type RikoniRecordWithImage = RikoniRecord & { images: Image };
+  const rikoniRecords = ref<RikoniRecordWithImage[]>([]);
+  const getRikoniRecords = async () => {
+    const firstDayOfMonth = currentDate.value.startOf('month');
+    const lastDayOfMonth = currentDate.value.endOf('month');
+
+    const { data, error } = await supabase
+      .from('rikoni_records')
+      .select('*, images(*)')
+      .gte('started_at', firstDayOfMonth.format('YYYY-MM-DD HH:mm:ss'))
+      .lte('started_at', lastDayOfMonth.format('YYYY-MM-DD HH:mm:ss'));
+
+    // TODO: エラー処理
+    if (!data) {
+      return;
+    }
+
+    console.log(data);
+    rikoniRecords.value = data as RikoniRecordWithImage[];
+  };
+
+  watch(currentDate, () => getRikoniRecords(), { immediate: true });
+
+  const getStartDate = () => {
+    const day1 = dayjs(currentDate.value).startOf('month');
+    const day1Number = day1.day();
+    return day1.subtract(day1Number, 'days');
+  };
+
+  const calendar = computed(() => getCalendar());
+  const getCalendar = (): Calendar => {
+    const tmpCalendar: Calendar = [];
+    let startDate = getStartDate();
+
+    for (let weekNumber = 0; weekNumber < 5; weekNumber++) {
+      const week: CalendarWeek = [];
+      for (let day = 0; day < 7; day++) {
+        const date =
+          startDate.get('month') === currentMonth.value
+            ? startDate.get('date')
+            : 0;
+        week.push({ date });
+        startDate = startDate.add(1, 'days');
+      }
+      tmpCalendar.push(week);
+    }
+
+    return tmpCalendar;
+  };
+
+  const isDoneRikoni = (day: number) => {
+    const startedDates = rikoniRecords.value.map((record) =>
+      dayjs(record.started_at).get('date')
+    );
+
+    return startedDates.some((date) => date === day);
+  };
+
+  const selectedRecord = ref<RikoniRecordWithImage | null>(null);
+  const selectRecord = (day: number) => {
+    const targetRecord = rikoniRecords.value.filter(
+      (r) => dayjs(r.started_at).get('date') === day
+    );
+
+    selectedRecord.value = targetRecord[0];
+  };
+</script>
+
+<template>
+  <h2>{{ currentDate.get('year') }}/{{ currentMonth + 1 }}</h2>
+  <v-btn @click="currentDate = currentDate.subtract(1, 'month')">前の月</v-btn>
+  <v-btn @click="currentDate = dayjs()">今日</v-btn>
+  <v-btn @click="currentDate = currentDate.add(1, 'month')">次の月</v-btn>
+
+  <v-container>
+    <v-row
+      v-for="(week, index) in calendar"
+      :style="{
+        'border-top': index === 0 ? 'solid 1px black' : '',
+        'border-left': 'solid 1px black',
+      }"
+      :key="index"
+    >
+      <v-col
+        v-for="(day, index) in week"
+        style="border-right: solid 1px black; border-bottom: solid 1px black"
+        :key="index"
+      >
+        <div v-if="day.date !== 0">
+          {{ day.date }}
+        </div>
+        <div style="height: 20px">
+          <v-icon
+            v-if="isDoneRikoni(day.date)"
+            @click="selectRecord(day.date)"
+            icon="mdi-heart"
+          />
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
+
+  <v-container v-if="selectedRecord">
+    <v-row>
+      <v-col cols="3">実施日時</v-col>
+      <v-col>
+        {{ dayjs(selectedRecord.started_at).format('HH:mm') }} 〜
+        {{ dayjs(selectedRecord.finished_at).format('HH:mm') }}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="3">評価</v-col>
+      <v-rating
+        :model-value="selectedRecord.rating"
+        color="pink"
+        disabled
+        empty-icon="mdi-heart-outline"
+        full-icon="mdi-heart"
+        half-icon="mdi-heart-half"
+        half-increments
+      ></v-rating>
+    </v-row>
+
+    <v-row>
+      <v-col cols="3">使用画像</v-col>
+      <v-img
+        class="pa-0"
+        max-height="250"
+        max-width="250"
+        :src="`${IMAGES_BUCKET_URL}/${selectedRecord.images.path}`"
+      ></v-img>
+    </v-row>
+  </v-container>
+</template>
+
+<style scoped></style>
