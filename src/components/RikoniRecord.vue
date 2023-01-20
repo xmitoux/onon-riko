@@ -4,6 +4,7 @@
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import ImageSelector from '@/components/ImageSelector.vue';
+  import type { Image, RikoniRecord } from '@/types';
 
   const props = defineProps<{
     open: boolean;
@@ -49,32 +50,17 @@
   const doneExercise = ref(false);
   const mealCondition = ref(1);
 
-  type RikoniRecord = {
-    started_at: string;
-    finished_at: string;
-    do_time: number;
-    image_id: number;
-    do_interval: number;
-    rating: number;
-    amount: number;
-    body_position: number;
-    is_drunk: boolean;
-    is_sleepy: boolean;
-    is_pre_excited: boolean;
-    done_work: boolean;
-    done_exercise: boolean;
-    meal_condition: number;
-    item_id: number;
-  };
-
   const insertRikoniRecord = async (record: RikoniRecord) => {
     const { data, error } = await supabase
       .from('rikoni_records')
       .insert(record)
-      .select('*');
+      .select();
 
     // TODO: エラー処理
     if (!data) {
+      console.log(error);
+      console.log(record);
+
       return;
     }
   };

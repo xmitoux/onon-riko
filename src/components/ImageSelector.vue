@@ -2,6 +2,7 @@
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
+  import type { Image } from '@/types';
 
   const props = defineProps<{ open: boolean }>();
   const emit = defineEmits<{
@@ -13,7 +14,7 @@
     selectedImage.value = null;
   };
 
-  const iamges = ref<Image[]>([]);
+  const images = ref<Image[]>([]);
   const getImages = async () => {
     const { data } = await supabase
       .from('images')
@@ -25,7 +26,7 @@
       return;
     }
 
-    iamges.value = data as Image[];
+    images.value = data as Image[];
   };
   getImages();
 
@@ -44,7 +45,7 @@
         <v-container class="pa-0">
           <v-row>
             <v-col
-              v-for="image in iamges"
+              v-for="image in images"
               :key="image.id"
               class="d-flex child-flex"
               cols="4"
