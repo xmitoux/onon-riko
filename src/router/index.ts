@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '@/pages/home/HomePage.vue';
 const CalendarPage = () => import('@/pages/CalendarPage.vue');
+const RankingPage = () => import('@/pages/RankingPage.vue');
 const SettingsPage = () => import('@/pages/SettingsPage.vue');
 
 const router = createRouter({
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/calendar',
       name: 'calendar',
       component: CalendarPage,
+    },
+    {
+      path: '/ranking',
+      name: 'ranking',
+      component: RankingPage,
     },
     {
       path: '/settings',
