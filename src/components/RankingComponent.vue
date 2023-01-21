@@ -3,25 +3,37 @@
   import { supabase } from '@/utils/supabase';
   import type { Image } from '@/types';
   import { IMAGES_BUCKET_URL } from '@/consts';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const images = ref<Image[]>([]);
+  const errorDetail = ref('');
   const getImages = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('images')
       .select('*')
       .order('use_count', { ascending: false });
 
-    // TODO: エラー処理
     if (!data) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
       return;
     }
 
     images.value = data as Image[];
   };
+
   getImages();
+
+  const showSnackbar = ref(false);
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="画像の取得に失敗しました。"
+    :error-detail="errorDetail"
+  />
+
   <v-container>
     <v-row v-for="(image, i) in images" :key="i" justify="center">
       <v-col cols="4">{{ i + 1 }}位({{ image.use_count }}回)</v-col>
