@@ -77,7 +77,7 @@
 </script>
 
 <template>
-  <h2>{{ currentDate.get('year') }}/{{ currentMonth + 1 }}</h2>
+  <span>{{ currentDate.get('year') }}/{{ currentMonth + 1 }}</span>
   <v-btn @click="currentDate = currentDate.subtract(1, 'month')">前の月</v-btn>
   <v-btn @click="currentDate = dayjs()">今日</v-btn>
   <v-btn @click="currentDate = currentDate.add(1, 'month')">次の月</v-btn>
@@ -136,8 +136,8 @@
       <v-col cols="3">使用画像</v-col>
       <v-img
         class="pa-0"
-        max-height="250"
-        max-width="250"
+        max-height="200"
+        max-width="200"
         :src="`${IMAGES_BUCKET_URL}/${selectedRecord.images.path}`"
       ></v-img>
     </v-row>

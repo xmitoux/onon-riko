@@ -6,7 +6,11 @@
       <v-app-bar-title>OnaOna(R)</v-app-bar-title>
     </v-app-bar>
 
-    <v-bottom-navigation grow :elevation="3">
+    <v-main>
+      <router-view />
+    </v-main>
+
+    <v-bottom-navigation absolute grow :elevation="3">
       <v-btn to="/">
         <v-icon icon="mdi-home" />
       </v-btn>
@@ -27,10 +31,6 @@
         <v-icon icon="mdi-cog" />
       </v-btn>
     </v-bottom-navigation>
-
-    <v-main>
-      <router-view />
-    </v-main>
   </v-app>
 </template>
 
