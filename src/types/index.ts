@@ -1,7 +1,7 @@
 export type Image = {
   id: number;
   path: string;
-  tag_id: number;
+  use_count: number;
   is_fav: boolean;
 };
 

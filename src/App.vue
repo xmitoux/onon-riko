@@ -10,7 +10,7 @@
       <router-view />
     </v-main>
 
-    <v-bottom-navigation absolute grow :elevation="3">
+    <v-bottom-navigation grow :elevation="3">
       <v-btn to="/">
         <v-icon icon="mdi-home" />
       </v-btn>
@@ -19,8 +19,8 @@
         <v-icon icon="mdi-calendar-month" />
       </v-btn>
 
-      <v-btn>
-        <v-icon icon="mdi-heart" />
+      <v-btn to="/ranking">
+        <v-icon icon="mdi-crown" />
       </v-btn>
 
       <v-btn>
