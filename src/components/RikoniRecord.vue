@@ -3,8 +3,9 @@
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
-  import ImageSelector from '@/components/ImageSelector.vue';
   import type { Image, RikoniRecord } from '@/types';
+  import ImageSelector from '@/components/ImageSelector.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
     open: boolean;
@@ -50,23 +51,24 @@
   const doneExercise = ref(false);
   const mealCondition = ref(1);
 
-  const insertRikoniRecord = async (record: RikoniRecord) => {
-    const { data, error } = await supabase
-      .from('rikoni_records')
-      .insert(record)
-      .select();
+  const errorDetail = ref('');
 
-    // TODO: エラー処理
-    if (!data) {
-      console.log(error);
-      console.log(record);
+  const insertRikoniRecord = async (record: RikoniRecord): Promise<boolean> => {
+    const { error } = await supabase.from('rikoni_records').insert(record);
 
-      return;
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return false;
     }
+
+    return true;
   };
 
-  const recordRikoni = () => {
+  const recordRikoni = async () => {
     if (!selectedImage.value) {
+      errorDetail.value = '画像を登録してください。';
+      showSnackbar.value = true;
       return;
     }
 
@@ -92,10 +94,12 @@
       item_id: 1,
     };
 
-    insertRikoniRecord(record);
-
-    closeDialog();
+    if (await insertRikoniRecord(record)) {
+      closeDialog();
+    }
   };
+
+  const showSnackbar = ref(false);
 </script>
 
 <template>
@@ -105,6 +109,12 @@
     scrollable
     transition="dialog-bottom-transition"
   >
+    <SnackbarError
+      v-model="showSnackbar"
+      error-message="登録に失敗しました。"
+      :error-detail="errorDetail"
+    />
+
     <v-card class="text-center" title="記録する">
       <v-card-text class="pa-0">
         <v-form ref="form" v-model="valid" lazy-validation>
