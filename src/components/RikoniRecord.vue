@@ -8,11 +8,11 @@
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
-    open: boolean;
+    modelValue: boolean;
     auto?: { startedAt: string; finishedAt: string };
   }>();
 
-  const emit = defineEmits(['close']);
+  const emit = defineEmits(['update:modelValue', 'close']);
 
   const startedAt = ref('');
   const finishedAt = ref('');
@@ -29,6 +29,7 @@
 
   const closeDialog = () => {
     selectedImage.value = null;
+    emit('update:modelValue', false);
     emit('close');
   };
 
@@ -104,7 +105,7 @@
 
 <template>
   <v-dialog
-    :model-value="props.open"
+    :model-value="props.modelValue"
     fullscreen
     scrollable
     transition="dialog-bottom-transition"
