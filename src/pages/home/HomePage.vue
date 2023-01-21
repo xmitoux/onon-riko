@@ -16,14 +16,14 @@
     showRecordDialog.value = true;
   };
 
-  const cancelRikoni = () => {
+  const clearTime = () => {
     startedAt.value = '';
     finishedAt.value = '';
   };
 
-  const onCloseRecordDialog = () => {
-    showRecordDialog.value = false;
-    cancelRikoni();
+  const startManualRikoni = () => {
+    clearTime();
+    showRecordDialog.value = true;
   };
 </script>
 
@@ -36,7 +36,7 @@
 
       <template v-else>
         <v-col>
-          <v-btn @click="cancelRikoni" variant="outlined">キャンセル</v-btn>
+          <v-btn @click="clearTime" variant="outlined">キャンセル</v-btn>
         </v-col>
 
         <v-col>
@@ -47,16 +47,14 @@
 
     <v-row class="ma-2 text-center">
       <v-col>
-        <v-btn @click="showRecordDialog = true" variant="outlined">
-          手動記録
-        </v-btn>
+        <v-btn @click="startManualRikoni" variant="outlined">手動記録</v-btn>
       </v-col>
     </v-row>
   </v-container>
 
   <RikoniRecord
-    :open="showRecordDialog"
+    v-model="showRecordDialog"
     :auto="{ startedAt, finishedAt }"
-    @close="onCloseRecordDialog"
+    @close="clearTime"
   />
 </template>
