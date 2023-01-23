@@ -41,21 +41,20 @@
     transition="dialog-bottom-transition"
   >
     <v-card class="text-center" title="画像を選択する">
-      <v-card-text class="pa-2">
-        <v-container class="pa-0">
+      <v-card-text class="pa-0">
+        <v-container>
           <v-row>
             <v-col
               v-for="image in images"
               :key="image.id"
-              class="d-flex child-flex"
+              class="pa-1"
               cols="4"
             >
               <v-img
+                @click="(selectedImage = image), closeDialog()"
                 aspect-ratio="1"
                 cover
                 :src="`${IMAGES_BUCKET_URL}/${image.path}`"
-                v-ripple
-                @click="(selectedImage = image), closeDialog()"
               >
                 <template v-slot:placeholder>
                   <v-row
@@ -72,8 +71,8 @@
         </v-container>
       </v-card-text>
 
-      <v-card-actions>
-        <v-btn block @click="closeDialog">キャンセル</v-btn>
+      <v-card-actions class="d-flex justify-end pb-6 pr-4">
+        <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
