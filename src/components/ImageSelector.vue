@@ -10,15 +10,14 @@
     (e: 'close', selectedImage: Image | null): void;
   }>();
 
-  const closeDialog = () => {
-    emit('close', selectedImage.value);
-    selectedImage.value = null;
-  };
+  const selectedImage = ref<Image | null>(null);
 
   const showSnackbar = ref(false);
   const errorDetail = ref('');
 
   const images = ref<Image[]>([]);
+
+  // 無限スクロール用に画像を10枚ずつ取得する
   const imageGetLimitLow = ref(0);
   const imageGetLimitHigh = ref(10);
   const imageGetLimitStep = ref(10);
@@ -45,8 +44,6 @@
 
   getImages();
 
-  const selectedImage = ref<Image | null>(null);
-
   // 無限スクロール処理
   // (スクロール最下部に監視対象要素を置き、それが表示されたら画像の続きを取得する)
   const observer = ref<IntersectionObserver | null>(null);
@@ -66,6 +63,11 @@
 
     observer.value.observe(observingTarget.value as Element);
   });
+
+  const closeDialog = () => {
+    emit('close', selectedImage.value);
+    selectedImage.value = null;
+  };
 </script>
 
 <template>
@@ -110,6 +112,7 @@
               </v-img>
             </v-col>
 
+            <!-- 無限スクロール監視用要素 -->
             <div ref="observingTarget"></div>
           </v-row>
         </v-container>
