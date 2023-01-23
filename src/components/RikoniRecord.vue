@@ -67,6 +67,12 @@
   };
 
   const recordRikoni = async () => {
+    if (!startedAt.value || !finishedAt.value) {
+      errorDetail.value = '日時を入力してください。';
+      showSnackbar.value = true;
+      return;
+    }
+
     if (!selectedImage.value) {
       errorDetail.value = '画像を登録してください。';
       showSnackbar.value = true;
