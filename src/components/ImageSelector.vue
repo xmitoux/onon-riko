@@ -92,7 +92,7 @@
               v-for="image in images"
               :key="image.id"
               class="pa-1"
-              cols="4"
+              cols="6"
             >
               <v-img
                 @click="(selectedImage = image), closeDialog()"
