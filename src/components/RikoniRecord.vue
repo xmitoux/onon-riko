@@ -102,6 +102,16 @@
 
   const closeDialog = () => {
     selectedImage.value = null;
+    rating.value = 0;
+    amount.value = 3;
+    bodyPosition.value = 1;
+    isDrunk.value = false;
+    isSleepy.value = false;
+    isPreExcited.value = false;
+    doneWork.value = false;
+    doneExercise.value = false;
+    mealCondition.value = 1;
+
     emit('update:modelValue', false);
     emit('close');
   };
