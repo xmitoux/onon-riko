@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image } from '@/types';
@@ -15,10 +15,14 @@
   };
 
   const images = ref<Image[]>([]);
+  const imageGetLimitLow = ref(0);
+  const imageGetLimitHigh = ref(10);
+  const imageGetLimitStep = ref(10);
   const getImages = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('images')
       .select('*')
+      .range(imageGetLimitLow.value, imageGetLimitHigh.value)
       .order('id', { ascending: true });
 
     // TODO: エラー処理
@@ -26,11 +30,33 @@
       return;
     }
 
-    images.value = data as Image[];
+    images.value = [...images.value, ...(data as Image[])];
+    imageGetLimitLow.value = imageGetLimitHigh.value + 1;
+    imageGetLimitHigh.value = imageGetLimitHigh.value + imageGetLimitStep.value;
   };
   getImages();
 
   const selectedImage = ref<Image | null>(null);
+
+  // 無限スクロール処理
+  // (スクロール最下部に監視対象要素を置き、それが表示されたら画像の続きを取得する)
+  const observer = ref<IntersectionObserver | null>(null);
+  const observingTarget = ref<Element | null>(null);
+  watch(observingTarget, () => {
+    if (!observingTarget.value) {
+      // 画面を閉じるとnullになるので何もしないようreturn
+      return;
+    }
+
+    observer.value = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting) {
+        getImages();
+      }
+    });
+
+    observer.value.observe(observingTarget.value as Element);
+  });
 </script>
 
 <template>
@@ -67,6 +93,8 @@
                 </template>
               </v-img>
             </v-col>
+
+            <div ref="observingTarget"></div>
           </v-row>
         </v-container>
       </v-card-text>
