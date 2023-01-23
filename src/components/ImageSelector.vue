@@ -3,6 +3,7 @@
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image } from '@/types';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{ open: boolean }>();
   const emit = defineEmits<{
@@ -14,10 +15,14 @@
     selectedImage.value = null;
   };
 
+  const showSnackbar = ref(false);
+  const errorDetail = ref('');
+
   const images = ref<Image[]>([]);
   const imageGetLimitLow = ref(0);
   const imageGetLimitHigh = ref(10);
   const imageGetLimitStep = ref(10);
+
   const getImages = async () => {
     const { data, error } = await supabase
       .from('images')
@@ -25,15 +30,19 @@
       .range(imageGetLimitLow.value, imageGetLimitHigh.value)
       .order('id', { ascending: true });
 
-    // TODO: エラー処理
-    if (!data) {
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
       return;
     }
 
     images.value = [...images.value, ...(data as Image[])];
     imageGetLimitLow.value = imageGetLimitHigh.value + 1;
     imageGetLimitHigh.value = imageGetLimitHigh.value + imageGetLimitStep.value;
+
+    return;
   };
+
   getImages();
 
   const selectedImage = ref<Image | null>(null);
@@ -66,6 +75,13 @@
     scrollable
     transition="dialog-bottom-transition"
   >
+    <SnackbarError
+      v-if="props.open"
+      v-model="showSnackbar"
+      error-message="画像の取得に失敗しました。"
+      :error-detail="errorDetail"
+    />
+
     <v-card class="text-center" title="画像を選択する">
       <v-card-text class="pa-0">
         <v-container>
