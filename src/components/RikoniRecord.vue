@@ -70,7 +70,6 @@
       finished_at: finishedAt.value,
       do_time: doTime,
       image_id: selectedImage.value.id,
-      do_interval: 0, // TODO: どうやって出す？
       rating: rating.value,
       amount: amount.value,
       is_drunk: isDrunk.value,

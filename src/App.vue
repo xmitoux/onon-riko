@@ -10,7 +10,7 @@
       <router-view />
     </v-main>
 
-    <v-bottom-navigation grow :elevation="3">
+    <v-bottom-navigation :elevation="3" grow height="70">
       <v-btn to="/">
         <v-icon icon="mdi-home" />
       </v-btn>
