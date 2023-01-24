@@ -14,7 +14,7 @@ export type RikoniRecord = {
   finished_at: string;
   do_time: number;
   image_id: number;
-  do_interval: number;
+  do_interval?: string;
   rating: number;
   amount: number;
   body_position: number;
