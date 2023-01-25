@@ -33,6 +33,15 @@
         text: props.title,
       },
     },
+
+    scales: {
+      y: {
+        ticks: {
+          stepSize: 1,
+          callback: (value: any) => Math.floor(value),
+        },
+      },
+    },
   };
 </script>
 
