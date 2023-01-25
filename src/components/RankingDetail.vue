@@ -1,7 +1,9 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue';
   import { supabase } from '@/utils/supabase';
+  import { useRankingDetails } from '@/utils/useRankingDetail';
 
+  import ChartBar from '@/components/ChartBar.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
@@ -11,6 +13,15 @@
   }>();
 
   const emit = defineEmits(['update:modelValue', 'close']);
+
+  // ランキング詳細子画面が開かれたときだけAPI呼び出しするためのprops監視
+  watch(props, (newProps) => {
+    if (newProps.modelValue) {
+      // 閉じたときに発火させないために必要
+      getRikoniTotal(newProps.imageId);
+      getRikoniCountPerYear(newProps.imageId);
+    }
+  });
 
   type RikoniTotal = {
     total_count: number;
@@ -26,9 +37,9 @@
   const showSnackbar = ref(false);
   const errorDetail = ref('');
 
-  const getRikoniTotal = async (imageId: number) => {
+  const getRikoniTotal = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_total', {
-      in_image_id: imageId,
+      in_image_id,
     });
 
     if (error) {
@@ -44,13 +55,28 @@
     rikoniAvgAmount.value = d.avg_amount;
   };
 
-  // ランキング詳細子画面が開かれたときだけAPI呼び出しするためのprops監視
-  watch(props, (newProps) => {
-    if (newProps.modelValue) {
-      // 閉じたときに発火させないために必要
-      getRikoniTotal(newProps.imageId);
+  type RikoniPerYear = {
+    year: string;
+    count: number;
+  };
+
+  const { rikoniYearDatasets, extractYearDatasets } = useRankingDetails();
+
+  const getRikoniCountPerYear = async (in_image_id: number) => {
+    const { data, error } = await supabase.rpc('get_rikoni_per_year', {
+      in_image_id,
+    });
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
     }
-  });
+
+    extractYearDatasets(data as RikoniPerYear[], 2023, 5);
+
+    console.log(rikoniYearDatasets.value);
+  };
 
   const closeDialog = () => {
     emit('update:modelValue', false);
@@ -97,6 +123,9 @@
             <v-col>{{ rikoniAvgAmount }}</v-col>
           </v-row>
         </v-container>
+
+        <ChartBar :datasets="rikoniYearDatasets" title="年別使用回数" />
+        <!-- <ChartBar v-bind="chartDataMonth" title="月別使用回数" /> -->
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end pb-6 pr-4">
