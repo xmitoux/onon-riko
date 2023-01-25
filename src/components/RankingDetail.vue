@@ -20,6 +20,7 @@
       // 閉じたときに発火させないために必要
       getRikoniTotal(newProps.imageId);
       getRikoniCountPerYear(newProps.imageId);
+      getRikoniCountPerMonth(newProps.imageId);
     }
   });
 
@@ -60,7 +61,12 @@
     count: number;
   };
 
-  const { rikoniYearDatasets, extractYearDatasets } = useRankingDetails();
+  const {
+    rikoniYearDatasets,
+    extractYearDatasets,
+    rikoniMonthDatasets,
+    extractMonthDatasets,
+  } = useRankingDetails();
 
   const getRikoniCountPerYear = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_per_year', {
@@ -74,8 +80,40 @@
     }
 
     extractYearDatasets(data as RikoniPerYear[], 2023, 5);
+  };
 
-    console.log(rikoniYearDatasets.value);
+  type RikoniPerMonth = {
+    month: string;
+    count: number;
+  };
+  const getRikoniCountPerMonth = async (in_image_id: number) => {
+    const { data, error } = await supabase.rpc('get_rikoni_per_month', {
+      in_image_id,
+      in_year: 2023,
+    });
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
+    }
+
+    // const test = [
+    //   { month: '1', count: 10 },
+    //   { month: '2', count: 14 },
+    //   { month: '3', count: 20 },
+    //   { month: '4', count: 12 },
+    //   { month: '5', count: 3 },
+    //   { month: '6', count: 32 },
+    //   { month: '7', count: 5 },
+    //   { month: '8', count: 10 },
+    //   { month: '9', count: 41 },
+    //   { month: '10', count: 22 },
+    //   { month: '11', count: 0 },
+    //   { month: '12', count: 36 },
+    // ];
+    // extractMonthDatasets(test);
+    extractMonthDatasets(data as RikoniPerMonth[]);
   };
 
   const closeDialog = () => {
@@ -125,7 +163,7 @@
         </v-container>
 
         <ChartBar :datasets="rikoniYearDatasets" title="年別使用回数" />
-        <!-- <ChartBar v-bind="chartDataMonth" title="月別使用回数" /> -->
+        <ChartBar :datasets="rikoniMonthDatasets" title="月別使用回数" />
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end pb-6 pr-4">

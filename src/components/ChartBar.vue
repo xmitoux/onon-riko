@@ -14,7 +14,7 @@
 
   const props = defineProps<{
     title: string;
-    datasets: Map<string, number>;
+    datasets: Map<number, number>;
   }>();
 
   const data = computed(() => {
