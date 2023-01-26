@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, watch } from 'vue';
   import {
     Chart as ChartJS,
     BarElement,
@@ -16,6 +16,8 @@
     title: string;
     datasets: Map<number, number>;
   }>();
+
+  const emit = defineEmits(['click']);
 
   const data = computed(() => {
     return {
@@ -42,7 +44,19 @@
         },
       },
     },
+
+    onClick: (e: any, elements: any, chart: any) => {
+      if (elements[0]) {
+        const i = elements[0].index;
+        const label = chart.data.labels[i];
+        const data = chart.data.datasets[0].data[i];
+
+        emit('click', label, data);
+      }
+    },
   };
+
+  watch(props, () => (options.plugins.title.text = props.title));
 </script>
 
 <template>

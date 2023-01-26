@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { useRankingDetails } from '@/utils/useRankingDetail';
 
@@ -12,6 +13,9 @@
   }>();
 
   const emit = defineEmits(['close']);
+
+  const currentYear = ref(dayjs());
+  const selectedYear = ref(dayjs());
 
   type RikoniTotal = {
     total_count: number;
@@ -74,7 +78,7 @@
       return;
     }
 
-    extractYearDatasets(data as RikoniPerYear[], 2023, 5);
+    extractYearDatasets(data as RikoniPerYear[], currentYear.value.year(), 5);
   };
   getRikoniCountPerYear(props.imageId);
 
@@ -82,10 +86,13 @@
     month: string;
     count: number;
   };
-  const getRikoniCountPerMonth = async (in_image_id: number) => {
+  const getRikoniCountPerMonth = async (
+    in_image_id: number,
+    in_year: number
+  ) => {
     const { data, error } = await supabase.rpc('get_rikoni_per_month', {
       in_image_id,
-      in_year: 2023,
+      in_year,
     });
 
     if (error) {
@@ -112,7 +119,13 @@
 
     extractMonthDatasets(data as RikoniPerMonth[]);
   };
-  getRikoniCountPerMonth(props.imageId);
+  getRikoniCountPerMonth(props.imageId, currentYear.value.year());
+
+  const onClickYearChart = (label: string) => {
+    const year = Number(label);
+    selectedYear.value = selectedYear.value.set('year', year);
+    getRikoniCountPerMonth(props.imageId, year);
+  };
 </script>
 
 <template>
@@ -149,8 +162,15 @@
         </v-row>
       </v-container>
 
-      <ChartBar :datasets="rikoniYearDatasets" title="年別使用回数" />
-      <ChartBar :datasets="rikoniMonthDatasets" title="月別使用回数" />
+      <ChartBar
+        @click="onClickYearChart"
+        :datasets="rikoniYearDatasets"
+        title="年別使用回数"
+      />
+      <ChartBar
+        :datasets="rikoniMonthDatasets"
+        :title="`月別使用回数(${selectedYear.year()})`"
+      />
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
