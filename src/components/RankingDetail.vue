@@ -49,6 +49,11 @@
       return;
     }
 
+    if (!data.length) {
+      // 0回は結果が返ってこないので終了
+      return;
+    }
+
     const d = (data as RikoniTotal[])[0];
     rikoniTotalCount.value = d.total_count;
     rikoniAvgDoTime.value = d.avg_do_time;
