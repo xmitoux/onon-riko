@@ -61,11 +61,18 @@
       </v-col>
     </v-row>
 
-    <RankingDetail
+    <v-dialog
       v-model="showDetail"
-      :image-id="selectedImage.id"
-      :image-path="selectedImage.path"
-    />
+      fullscreen
+      scrollable
+      transition="dialog-bottom-transition"
+    >
+      <RankingDetail
+        @close="showDetail = false"
+        :image-id="selectedImage.id"
+        :image-path="selectedImage.path"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
