@@ -161,47 +161,66 @@
           <v-col class="pa-0 ma-0">平均評価</v-col>
           <v-col class="pa-0 ma-0">{{ rikoniAvgRating }}</v-col>
         </v-row>
+
+        <v-sheet class="relative px-4 mt-1">
+          <v-btn
+            v-show="rikoniYearDatasetsPast.size"
+            @click="moveElement('prev')"
+            class="prev-year"
+            icon="mdi-arrow-left"
+            size="x-small"
+            variant="text"
+          />
+
+          <v-btn
+            v-show="rikoniYearDatasetsFuture.size"
+            @click="moveElement('next')"
+            class="next-year"
+            icon="mdi-arrow-right"
+            size="x-small"
+            variant="text"
+          />
+
+          <ChartBar
+            v-if="loadingYear"
+            @click="onClickYearChart"
+            :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
+            :datasets="rikoniYearDatasets"
+            title="年別使用回数"
+            :max-y-axis="maxYAxisYear"
+          />
+        </v-sheet>
+
+        <v-sheet class="pa-4 py-0">
+          <ChartBar
+            v-if="loadingMonth"
+            :datasets="rikoniMonthDatasets"
+            :title="`月別使用回数(${selectedYear.year()})`"
+            :max-y-axis="maxYAxisMonth"
+          />
+        </v-sheet>
       </v-container>
-
-      <v-sheet class="px-4 my-1">
-        <ChartBar
-          v-if="loadingYear"
-          @click="onClickYearChart"
-          :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
-          :datasets="rikoniYearDatasets"
-          title="年別使用回数"
-          :max-y-axis="maxYAxisYear"
-        />
-      </v-sheet>
-
-      <v-sheet class="pa-4 py-0">
-        <ChartBar
-          v-if="loadingMonth"
-          :datasets="rikoniMonthDatasets"
-          :title="`月別使用回数(${selectedYear.year()})`"
-          :max-y-axis="maxYAxisMonth"
-        />
-      </v-sheet>
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
-      <v-btn
-        v-show="rikoniYearDatasetsPast.size"
-        variant="outlined"
-        @click="moveElement('prev')"
-      >
-        過去
-      </v-btn>
-      <v-btn
-        v-show="rikoniYearDatasetsFuture.size"
-        variant="outlined"
-        @click="moveElement('next')"
-      >
-        未来
-      </v-btn>
       <v-btn variant="outlined" @click="emit('close')">OK</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .relative {
+    position: relative;
+  }
+
+  .prev-year {
+    position: absolute;
+    top: 1px;
+    left: 100px;
+  }
+  .next-year {
+    position: absolute;
+    top: 1px;
+    right: 100px;
+  }
+</style>
