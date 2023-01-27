@@ -62,7 +62,18 @@
           max-height="250"
           max-width="250"
           :src="`${IMAGES_BUCKET_URL}/${image.path}`"
-        />
+        >
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular
+                color="pink"
+                indeterminate
+                :size="50"
+                :width="5"
+              />
+            </v-row>
+          </template>
+        </v-img>
       </v-col>
     </v-row>
 
