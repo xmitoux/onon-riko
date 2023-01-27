@@ -8,9 +8,14 @@
   import RankingDetail from '@/components/RankingDetail.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
-  const images = ref<Image[]>([]);
+  import { useRankingComponent } from '@/utils/useRankingComponent';
+  import type { RankedImage } from '@/utils/useRankingComponent';
+
+  const images = ref<RankedImage[]>([]);
   const showSnackbar = ref(false);
   const errorDetail = ref('');
+
+  const { rankImagesByUseCount } = useRankingComponent();
 
   const getImages = async () => {
     const { data, error } = await supabase
@@ -24,7 +29,7 @@
       return;
     }
 
-    images.value = data as Image[];
+    images.value = rankImagesByUseCount(data as Image[]);
   };
 
   getImages();
@@ -48,7 +53,7 @@
 
   <v-container>
     <v-row v-for="(image, i) in images" :key="i" justify="center">
-      <v-col cols="4">{{ i + 1 }}位 ({{ image.use_count }}回)</v-col>
+      <v-col cols="4">{{ image.rank }}位 ({{ image.use_count }}回)</v-col>
       <v-col>
         <v-img
           @click="
