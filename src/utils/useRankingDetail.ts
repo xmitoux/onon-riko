@@ -5,6 +5,11 @@ type DbDateDatasets =
   | { count: number; year: string }[]
   | { count: number; month: string }[];
 
+/**
+ * DBデータをMap化する
+ * @param dbDatasets DBデータ(年別/月別)
+ * @returns DBデータのMap
+ */
 const convertDbDatasetToMap = (dbDatasets: DbDateDatasets) => {
   const map: DateDataset = new Map<number, number>();
   for (const dataset of dbDatasets) {
@@ -59,7 +64,11 @@ export const useRankingDetails = () => {
   const rikoniYearDatasetsPast = ref(new Map<number, number>());
   const rikoniYearDatasetsFuture = ref(new Map<number, number>());
 
-  const extractYearDatasets = (
+  /**
+   * 年別データを直近5年とそれ以前のデータに分けて抽出する
+   * @param datasetObj DBの年別データ
+   */
+  const extract5YearsDatasets = (
     datasetObj: {
       year: string;
       count: number;
@@ -67,7 +76,7 @@ export const useRankingDetails = () => {
   ) => {
     const datasetMap = convertDbDatasetToMap(datasetObj);
     const filledYearsMap = fillMissingYears(datasetMap);
-    const splitedYearsMap = splitMap(filledYearsMap, 5); // TODO: 5年固定にしている
+    const splitedYearsMap = splitMap(filledYearsMap, 5);
 
     [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitedYearsMap;
   };
@@ -75,7 +84,11 @@ export const useRankingDetails = () => {
   const rikoniMonthDatasets = ref(new Map<number, number>());
   const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-  const extractMonthDatasets = (
+  /**
+   * 月別データセットを取得する
+   * @param datasetObj DBの月別データ
+   */
+  const getMonthDatasets = (
     datasetObj: {
       month: string;
       count: number;
@@ -83,15 +96,18 @@ export const useRankingDetails = () => {
   ) => {
     const newDatasetMap: DateDataset = new Map<number, number>();
     const datasetMap = convertDbDatasetToMap(datasetObj);
+
+    // 0回の月はDBデータに存在しないのでを追加する
     for (const month of months) {
       newDatasetMap.set(month, datasetMap.get(month) || 0);
     }
+
     rikoniMonthDatasets.value = newDatasetMap;
   };
 
   /**
    * 年別グラフの表示年切り替えのため年別データセット配列の前後入れ替えを行う
-   * @param command
+   * @param command 'prev' or 'next'
    */
   const moveElement = (command: 'prev' | 'next') => {
     const newMaps: Map<number, number>[] = [];
@@ -133,9 +149,9 @@ export const useRankingDetails = () => {
     rikoniYearDatasets,
     rikoniYearDatasetsPast,
     rikoniYearDatasetsFuture,
-    extractYearDatasets,
+    extract5YearsDatasets,
     rikoniMonthDatasets,
-    extractMonthDatasets,
+    getMonthDatasets,
     moveElement,
   };
 };

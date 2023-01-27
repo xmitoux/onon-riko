@@ -1,3 +1,6 @@
+/**
+ * Mapの最大値を取得する
+ */
 export const getMaxMapValue = (
   maps: Map<number, number> | Map<number, number>[]
 ): number => {
