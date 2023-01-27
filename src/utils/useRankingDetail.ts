@@ -18,31 +18,59 @@ const convertDbDatasetToMap = (dbDatasets: DbDateDatasets) => {
   return map;
 };
 
-const getRecentYears = (year: number, count: number): number[] => {
-  const recentYears = [];
-  for (let i = 0; i < count; i++) {
-    recentYears.push(year - (count - 1 - i));
+/**
+ * APIで取得した年別カウントデータに歯抜けの年があるとき,
+ * その年のカウントを0としてMapを埋める
+ * @param map
+ * @returns
+ */
+const fillMissingYears = (map: Map<number, number>): Map<number, number> => {
+  const minMaxYear = [...map.keys()].reduce(
+    (acc, key) => [Math.min(acc[0], key), Math.max(acc[1], key)],
+    [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]
+  );
+
+  const newMap = new Map<number, number>();
+  for (let year = minMaxYear[0]; year <= minMaxYear[1]; year++) {
+    newMap.set(year, map.get(year) || 0);
   }
-  return recentYears;
+  return newMap;
+};
+
+/**
+ * 年別データセットを指定した年数分で分割する
+ * @param map
+ * @param num
+ * @returns [余りのデータセット, 指定年数分のデータセット]
+ */
+const splitMap = (
+  map: Map<number, number>,
+  num: number
+): [Map<number, number>, Map<number, number>] => {
+  const entries = [...map.entries()];
+  const newMap1 = new Map(entries.slice(-num));
+  const newMap2 = new Map(entries.slice(0, entries.length - num));
+
+  return [newMap2, newMap1];
 };
 
 const rikoniYearDatasets = ref(new Map<number, number>());
+const rikoniYearDatasetsPast = ref(new Map<number, number>());
+const rikoniYearDatasetsFuture = ref(new Map<number, number>());
 
 const extractYearDatasets = (
   datasetObj: {
     year: string;
     count: number;
-  }[],
-  year: number,
-  yearRange: number
+  }[]
 ) => {
-  const newDatasetMap: DateDataset = new Map<number, number>();
   const datasetMap = convertDbDatasetToMap(datasetObj);
-  const recentYears = getRecentYears(year, yearRange);
-  for (const year of recentYears) {
-    newDatasetMap.set(year, datasetMap.get(year) || 0);
-  }
-  rikoniYearDatasets.value = newDatasetMap;
+  const filledYearsMap = fillMissingYears(datasetMap);
+
+  [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitMap(
+    filledYearsMap,
+    5
+  );
 };
 
 const rikoniMonthDatasets = ref(new Map<number, number>());
@@ -62,11 +90,54 @@ const extractMonthDatasets = (
   rikoniMonthDatasets.value = newDatasetMap;
 };
 
+/**
+ * 年別グラフの表示年切り替えのため年別データセット配列の前後入れ替えを行う
+ * @param command
+ */
+const moveElement = (command: 'prev' | 'next') => {
+  const newMaps: Map<number, number>[] = [];
+
+  if (command === 'prev') {
+    newMaps[0] = new Map(
+      [...rikoniYearDatasetsPast.value.entries()].slice(0, -1)
+    );
+    newMaps[1] = new Map([
+      ...[...rikoniYearDatasetsPast.value.entries()].slice(-1),
+      ...[...rikoniYearDatasets.value.entries()].slice(0, -1),
+    ]);
+    newMaps[2] = new Map([
+      ...[...rikoniYearDatasets.value.entries()].slice(-1),
+      ...[...rikoniYearDatasetsFuture.value.entries()].slice(),
+    ]);
+  } else if (command === 'next') {
+    newMaps[2] = new Map(
+      [...rikoniYearDatasetsFuture.value.entries()].slice(1)
+    );
+    newMaps[1] = new Map([
+      ...[...rikoniYearDatasets.value.entries()].slice(1),
+      ...[...rikoniYearDatasetsFuture.value.entries()].slice(0, 1),
+    ]);
+    newMaps[0] = new Map([
+      ...[...rikoniYearDatasetsPast.value.entries()].slice(),
+      ...[...rikoniYearDatasets.value.entries()].slice(0, 1),
+    ]);
+  }
+
+  [
+    rikoniYearDatasetsPast.value,
+    rikoniYearDatasets.value,
+    rikoniYearDatasetsFuture.value,
+  ] = newMaps;
+};
+
 export const useRankingDetails = () => {
   return {
     rikoniYearDatasets,
+    rikoniYearDatasetsPast,
+    rikoniYearDatasetsFuture,
     extractYearDatasets,
     rikoniMonthDatasets,
     extractMonthDatasets,
+    moveElement,
   };
 };

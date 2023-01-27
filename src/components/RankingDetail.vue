@@ -62,9 +62,12 @@
 
   const {
     rikoniYearDatasets,
+    rikoniYearDatasetsPast,
+    rikoniYearDatasetsFuture,
     extractYearDatasets,
     rikoniMonthDatasets,
     extractMonthDatasets,
+    moveElement,
   } = useRankingDetails();
 
   const getRikoniCountPerYear = async (in_image_id: number) => {
@@ -78,7 +81,7 @@
       return;
     }
 
-    extractYearDatasets(data as RikoniPerYear[], currentYear.value.year(), 5);
+    extractYearDatasets(data as RikoniPerYear[]);
   };
   getRikoniCountPerYear(props.imageId);
 
@@ -100,22 +103,6 @@
       showSnackbar.value = true;
       return;
     }
-
-    // const test = [
-    //   { month: '1', count: 10 },
-    //   { month: '2', count: 14 },
-    //   { month: '3', count: 20 },
-    //   { month: '4', count: 12 },
-    //   { month: '5', count: 3 },
-    //   { month: '6', count: 32 },
-    //   { month: '7', count: 5 },
-    //   { month: '8', count: 10 },
-    //   { month: '9', count: 41 },
-    //   { month: '10', count: 22 },
-    //   { month: '11', count: 0 },
-    //   { month: '12', count: 36 },
-    // ];
-    // extractMonthDatasets(test);
 
     extractMonthDatasets(data as RikoniPerMonth[]);
   };
@@ -174,6 +161,20 @@
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
+      <v-btn
+        v-show="rikoniYearDatasetsPast.size"
+        variant="outlined"
+        @click="moveElement('prev')"
+      >
+        過去
+      </v-btn>
+      <v-btn
+        v-show="rikoniYearDatasetsFuture.size"
+        variant="outlined"
+        @click="moveElement('next')"
+      >
+        未来
+      </v-btn>
       <v-btn variant="outlined" @click="emit('close')">OK</v-btn>
     </v-card-actions>
   </v-card>

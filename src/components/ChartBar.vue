@@ -9,7 +9,7 @@
   } from 'chart.js';
   import { Bar } from 'vue-chartjs';
 
-  ChartJS.defaults.backgroundColor = '#9BD0F5';
+  ChartJS.defaults.backgroundColor = '#FFB7C5';
   ChartJS.register(BarElement, CategoryScale, LinearScale, Title);
 
   const props = defineProps<{
