@@ -144,7 +144,7 @@
     <v-card-text class="pa-0">
       <v-container class="pa-0 ma-0 mt-2">
         <v-row class="pa-0 ma-0 mb-2" justify="center">
-          <v-img max-height="250" max-width="250" :src="props.imagePath" />
+          <v-img max-height="250" max-width="350" :src="props.imagePath" />
         </v-row>
 
         <v-row class="pa-0 pl-4 ma-0 mt-1">
