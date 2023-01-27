@@ -184,7 +184,7 @@
           <ChartBar
             v-if="loadingYear"
             @click="onClickYearChart"
-            :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
+            :bar-percentage="(rikoniYearDatasets.size / 5) * 0.5"
             :datasets="rikoniYearDatasets"
             title="年別使用回数"
             :max-y-axis="maxYAxisYear"
@@ -194,6 +194,7 @@
         <v-sheet class="chart pa-4 py-0">
           <ChartBar
             v-if="loadingMonth"
+            :bar-percentage="0.5"
             :datasets="rikoniMonthDatasets"
             :title="`月別使用回数(${selectedYear.year()})`"
             :max-y-axis="maxYAxisMonth"
