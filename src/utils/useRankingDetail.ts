@@ -54,81 +54,81 @@ const splitMap = (
   return [newMap2, newMap1];
 };
 
-const rikoniYearDatasets = ref(new Map<number, number>());
-const rikoniYearDatasetsPast = ref(new Map<number, number>());
-const rikoniYearDatasetsFuture = ref(new Map<number, number>());
-
-const extractYearDatasets = (
-  datasetObj: {
-    year: string;
-    count: number;
-  }[]
-) => {
-  const datasetMap = convertDbDatasetToMap(datasetObj);
-  const filledYearsMap = fillMissingYears(datasetMap);
-  const splitedYearsMap = splitMap(filledYearsMap, 5); // TODO: 5年固定にしている
-
-  [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitedYearsMap;
-};
-
-const rikoniMonthDatasets = ref(new Map<number, number>());
-const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
-const extractMonthDatasets = (
-  datasetObj: {
-    month: string;
-    count: number;
-  }[]
-) => {
-  const newDatasetMap: DateDataset = new Map<number, number>();
-  const datasetMap = convertDbDatasetToMap(datasetObj);
-  for (const month of months) {
-    newDatasetMap.set(month, datasetMap.get(month) || 0);
-  }
-  rikoniMonthDatasets.value = newDatasetMap;
-};
-
-/**
- * 年別グラフの表示年切り替えのため年別データセット配列の前後入れ替えを行う
- * @param command
- */
-const moveElement = (command: 'prev' | 'next') => {
-  const newMaps: Map<number, number>[] = [];
-
-  if (command === 'prev') {
-    newMaps[0] = new Map(
-      [...rikoniYearDatasetsPast.value.entries()].slice(0, -1)
-    );
-    newMaps[1] = new Map([
-      ...[...rikoniYearDatasetsPast.value.entries()].slice(-1),
-      ...[...rikoniYearDatasets.value.entries()].slice(0, -1),
-    ]);
-    newMaps[2] = new Map([
-      ...[...rikoniYearDatasets.value.entries()].slice(-1),
-      ...[...rikoniYearDatasetsFuture.value.entries()].slice(),
-    ]);
-  } else if (command === 'next') {
-    newMaps[2] = new Map(
-      [...rikoniYearDatasetsFuture.value.entries()].slice(1)
-    );
-    newMaps[1] = new Map([
-      ...[...rikoniYearDatasets.value.entries()].slice(1),
-      ...[...rikoniYearDatasetsFuture.value.entries()].slice(0, 1),
-    ]);
-    newMaps[0] = new Map([
-      ...[...rikoniYearDatasetsPast.value.entries()].slice(),
-      ...[...rikoniYearDatasets.value.entries()].slice(0, 1),
-    ]);
-  }
-
-  [
-    rikoniYearDatasetsPast.value,
-    rikoniYearDatasets.value,
-    rikoniYearDatasetsFuture.value,
-  ] = newMaps;
-};
-
 export const useRankingDetails = () => {
+  const rikoniYearDatasets = ref(new Map<number, number>());
+  const rikoniYearDatasetsPast = ref(new Map<number, number>());
+  const rikoniYearDatasetsFuture = ref(new Map<number, number>());
+
+  const extractYearDatasets = (
+    datasetObj: {
+      year: string;
+      count: number;
+    }[]
+  ) => {
+    const datasetMap = convertDbDatasetToMap(datasetObj);
+    const filledYearsMap = fillMissingYears(datasetMap);
+    const splitedYearsMap = splitMap(filledYearsMap, 5); // TODO: 5年固定にしている
+
+    [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitedYearsMap;
+  };
+
+  const rikoniMonthDatasets = ref(new Map<number, number>());
+  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+  const extractMonthDatasets = (
+    datasetObj: {
+      month: string;
+      count: number;
+    }[]
+  ) => {
+    const newDatasetMap: DateDataset = new Map<number, number>();
+    const datasetMap = convertDbDatasetToMap(datasetObj);
+    for (const month of months) {
+      newDatasetMap.set(month, datasetMap.get(month) || 0);
+    }
+    rikoniMonthDatasets.value = newDatasetMap;
+  };
+
+  /**
+   * 年別グラフの表示年切り替えのため年別データセット配列の前後入れ替えを行う
+   * @param command
+   */
+  const moveElement = (command: 'prev' | 'next') => {
+    const newMaps: Map<number, number>[] = [];
+
+    if (command === 'prev') {
+      newMaps[0] = new Map(
+        [...rikoniYearDatasetsPast.value.entries()].slice(0, -1)
+      );
+      newMaps[1] = new Map([
+        ...[...rikoniYearDatasetsPast.value.entries()].slice(-1),
+        ...[...rikoniYearDatasets.value.entries()].slice(0, -1),
+      ]);
+      newMaps[2] = new Map([
+        ...[...rikoniYearDatasets.value.entries()].slice(-1),
+        ...[...rikoniYearDatasetsFuture.value.entries()].slice(),
+      ]);
+    } else if (command === 'next') {
+      newMaps[2] = new Map(
+        [...rikoniYearDatasetsFuture.value.entries()].slice(1)
+      );
+      newMaps[1] = new Map([
+        ...[...rikoniYearDatasets.value.entries()].slice(1),
+        ...[...rikoniYearDatasetsFuture.value.entries()].slice(0, 1),
+      ]);
+      newMaps[0] = new Map([
+        ...[...rikoniYearDatasetsPast.value.entries()].slice(),
+        ...[...rikoniYearDatasets.value.entries()].slice(0, 1),
+      ]);
+    }
+
+    [
+      rikoniYearDatasetsPast.value,
+      rikoniYearDatasets.value,
+      rikoniYearDatasetsFuture.value,
+    ] = newMaps;
+  };
+
   return {
     rikoniYearDatasets,
     rikoniYearDatasetsPast,
