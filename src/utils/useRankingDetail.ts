@@ -49,7 +49,7 @@ const splitMap = (
 ): [Map<number, number>, Map<number, number>] => {
   const entries = [...map.entries()];
   const newMap1 = new Map(entries.slice(-num));
-  const newMap2 = new Map(entries.slice(0, entries.length - num));
+  const newMap2 = new Map(entries.slice(0, -num));
 
   return [newMap2, newMap1];
 };
@@ -66,11 +66,9 @@ const extractYearDatasets = (
 ) => {
   const datasetMap = convertDbDatasetToMap(datasetObj);
   const filledYearsMap = fillMissingYears(datasetMap);
+  const splitedYearsMap = splitMap(filledYearsMap, 5); // TODO: 5年固定にしている
 
-  [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitMap(
-    filledYearsMap,
-    5
-  );
+  [rikoniYearDatasetsPast.value, rikoniYearDatasets.value] = splitedYearsMap;
 };
 
 const rikoniMonthDatasets = ref(new Map<number, number>());
