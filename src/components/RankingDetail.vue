@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { useRankingDetails } from '@/utils/useRankingDetail';
+  import { getMaxMapValue } from '@/utils/utils';
 
   import ChartBar from '@/components/ChartBar.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
@@ -64,11 +65,14 @@
     rikoniYearDatasets,
     rikoniYearDatasetsPast,
     rikoniYearDatasetsFuture,
-    extractYearDatasets,
     rikoniMonthDatasets,
+    extractYearDatasets,
     extractMonthDatasets,
     moveElement,
   } = useRankingDetails();
+
+  let maxYAxisYear = 0;
+  const loadingYear = ref(false);
 
   const getRikoniCountPerYear = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_per_year', {
@@ -82,6 +86,13 @@
     }
 
     extractYearDatasets(data as RikoniPerYear[]);
+
+    maxYAxisYear = getMaxMapValue([
+      rikoniYearDatasets.value,
+      rikoniYearDatasetsPast.value,
+    ]);
+
+    loadingYear.value = true;
   };
   getRikoniCountPerYear(props.imageId);
 
@@ -89,6 +100,9 @@
     month: string;
     count: number;
   };
+
+  const loadingMonth = ref(false);
+
   const getRikoniCountPerMonth = async (
     in_image_id: number,
     in_year: number
@@ -105,8 +119,14 @@
     }
 
     extractMonthDatasets(data as RikoniPerMonth[]);
+
+    loadingMonth.value = true;
   };
   getRikoniCountPerMonth(props.imageId, currentYear.value.year());
+
+  const maxYAxisMonth = computed(() =>
+    getMaxMapValue(rikoniMonthDatasets.value)
+  );
 
   const onClickYearChart = (label: string) => {
     const year = Number(label);
@@ -150,14 +170,18 @@
       </v-container>
 
       <ChartBar
+        v-if="loadingYear"
         @click="onClickYearChart"
         :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
         :datasets="rikoniYearDatasets"
         title="年別使用回数"
+        :max-y-axis="maxYAxisYear"
       />
       <ChartBar
+        v-if="loadingMonth"
         :datasets="rikoniMonthDatasets"
         :title="`月別使用回数(${selectedYear.year()})`"
+        :max-y-axis="maxYAxisMonth"
       />
     </v-card-text>
 

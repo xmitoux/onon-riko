@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, watch } from 'vue';
+  import { computed } from 'vue';
   import {
     Chart as ChartJS,
     BarElement,
@@ -16,6 +16,7 @@
     title: string;
     datasets: Map<number, number>;
     barPercentage?: number;
+    maxYAxis?: number;
   }>();
 
   const emit = defineEmits(['click']);
@@ -32,37 +33,38 @@
     };
   });
 
-  const options = {
-    responsive: true,
+  const options = computed(() => {
+    return {
+      responsive: true,
 
-    plugins: {
-      title: {
-        display: true,
-        text: props.title,
-      },
-    },
-
-    scales: {
-      y: {
-        ticks: {
-          stepSize: 1,
-          callback: (value: any) => Math.floor(value),
+      plugins: {
+        title: {
+          display: true,
+          text: props.title,
         },
       },
-    },
 
-    onClick: (e: any, elements: any, chart: any) => {
-      if (elements[0]) {
-        const i = elements[0].index;
-        const label = chart.data.labels[i];
-        const data = chart.data.datasets[0].data[i];
+      scales: {
+        y: {
+          ticks: {
+            stepSize: 1,
+            callback: (value: any) => Math.floor(value),
+          },
+          max: props.maxYAxis,
+        },
+      },
 
-        emit('click', label, data);
-      }
-    },
-  };
+      onClick: (e: any, elements: any, chart: any) => {
+        if (elements[0]) {
+          const i = elements[0].index;
+          const label = chart.data.labels[i];
+          const data = chart.data.datasets[0].data[i];
 
-  watch(props, () => (options.plugins.title.text = props.title));
+          emit('click', label, data);
+        }
+      },
+    };
+  });
 </script>
 
 <template>
