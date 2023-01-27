@@ -28,7 +28,6 @@
   const rikoniTotalCount = ref(0);
   const rikoniAvgDoTime = ref(0);
   const rikoniAvgRating = ref(0);
-  const rikoniAvgAmount = ref(0);
   const showSnackbar = ref(false);
   const errorDetail = ref('');
 
@@ -52,7 +51,6 @@
     rikoniTotalCount.value = d.total_count;
     rikoniAvgDoTime.value = d.avg_do_time;
     rikoniAvgRating.value = d.avg_rating;
-    rikoniAvgAmount.value = d.avg_amount;
   };
   getRikoniTotal(props.imageId);
 
@@ -162,12 +160,6 @@
         <v-row class="pa-0 pl-4 ma-0">
           <v-col class="pa-0 ma-0">平均評価</v-col>
           <v-col class="pa-0 ma-0">{{ rikoniAvgRating }}</v-col>
-        </v-row>
-
-        <!-- <v-row> -->
-        <v-row class="pa-0 pl-4 ma-0">
-          <v-col class="pa-0 ma-0">平均量</v-col>
-          <v-col class="pa-0 ma-0">{{ rikoniAvgAmount }}</v-col>
         </v-row>
       </v-container>
 
