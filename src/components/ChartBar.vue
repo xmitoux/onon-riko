@@ -35,6 +35,7 @@
 
   const options = computed(() => {
     return {
+      maintainAspectRatio: false,
       responsive: true,
 
       plugins: {

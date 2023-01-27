@@ -162,7 +162,7 @@
           <v-col class="pa-0 ma-0">{{ rikoniAvgRating }}</v-col>
         </v-row>
 
-        <v-sheet class="relative px-4 mt-1">
+        <v-sheet class="relative chart px-4 mt-1">
           <v-btn
             v-show="rikoniYearDatasetsPast.size"
             @click="moveElement('prev')"
@@ -191,7 +191,7 @@
           />
         </v-sheet>
 
-        <v-sheet class="pa-4 py-0">
+        <v-sheet class="chart pa-4 py-0">
           <ChartBar
             v-if="loadingMonth"
             :datasets="rikoniMonthDatasets"
@@ -218,9 +218,14 @@
     top: 1px;
     left: 100px;
   }
+
   .next-year {
     position: absolute;
     top: 1px;
     right: 100px;
+  }
+
+  .chart {
+    height: 145px;
   }
 </style>
