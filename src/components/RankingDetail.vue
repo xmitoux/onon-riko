@@ -151,6 +151,7 @@
 
       <ChartBar
         @click="onClickYearChart"
+        :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
         :datasets="rikoniYearDatasets"
         title="年別使用回数"
       />

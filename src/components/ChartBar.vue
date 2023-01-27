@@ -15,6 +15,7 @@
   const props = defineProps<{
     title: string;
     datasets: Map<number, number>;
+    barPercentage?: number;
   }>();
 
   const emit = defineEmits(['click']);
@@ -22,7 +23,12 @@
   const data = computed(() => {
     return {
       labels: [...props.datasets.keys()],
-      datasets: [{ data: [...props.datasets.values()] }],
+      datasets: [
+        {
+          data: [...props.datasets.values()],
+          barPercentage: props.barPercentage,
+        },
+      ],
     };
   });
 
