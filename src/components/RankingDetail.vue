@@ -144,45 +144,52 @@
 
   <v-card class="text-center" title="画像詳細">
     <v-card-text class="pa-0">
-      <v-container>
-        <v-row justify="center">
+      <v-container class="pa-0 ma-0 mt-2">
+        <v-row class="pa-0 ma-0 mb-2" justify="center">
           <v-img max-height="250" max-width="250" :src="props.imagePath" />
         </v-row>
-        <v-row>
-          <v-col>総使用回数</v-col>
-          <v-col>{{ rikoniTotalCount }}回</v-col>
+
+        <v-row class="pa-0 pl-4 ma-0 mt-1">
+          <v-col class="pa-0 ma-0">総使用回数</v-col>
+          <v-col class="pa-0 ma-0">{{ rikoniTotalCount }}回</v-col>
         </v-row>
 
-        <v-row>
-          <v-col>平均実施時間</v-col>
-          <v-col>{{ rikoniAvgDoTime }}分</v-col>
+        <v-row class="pa-0 pl-4 ma-0">
+          <v-col class="pa-0 ma-0">平均実施時間</v-col>
+          <v-col class="pa-0 ma-0">{{ rikoniAvgDoTime }}分</v-col>
         </v-row>
 
-        <v-row>
-          <v-col>平均評価</v-col>
-          <v-col>{{ rikoniAvgRating }}</v-col>
+        <v-row class="pa-0 pl-4 ma-0">
+          <v-col class="pa-0 ma-0">平均評価</v-col>
+          <v-col class="pa-0 ma-0">{{ rikoniAvgRating }}</v-col>
         </v-row>
 
-        <v-row>
-          <v-col>平均量</v-col>
-          <v-col>{{ rikoniAvgAmount }}</v-col>
+        <!-- <v-row> -->
+        <v-row class="pa-0 pl-4 ma-0">
+          <v-col class="pa-0 ma-0">平均量</v-col>
+          <v-col class="pa-0 ma-0">{{ rikoniAvgAmount }}</v-col>
         </v-row>
       </v-container>
 
-      <ChartBar
-        v-if="loadingYear"
-        @click="onClickYearChart"
-        :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
-        :datasets="rikoniYearDatasets"
-        title="年別使用回数"
-        :max-y-axis="maxYAxisYear"
-      />
-      <ChartBar
-        v-if="loadingMonth"
-        :datasets="rikoniMonthDatasets"
-        :title="`月別使用回数(${selectedYear.year()})`"
-        :max-y-axis="maxYAxisMonth"
-      />
+      <v-sheet class="px-4 my-1">
+        <ChartBar
+          v-if="loadingYear"
+          @click="onClickYearChart"
+          :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
+          :datasets="rikoniYearDatasets"
+          title="年別使用回数"
+          :max-y-axis="maxYAxisYear"
+        />
+      </v-sheet>
+
+      <v-sheet class="pa-4 py-0">
+        <ChartBar
+          v-if="loadingMonth"
+          :datasets="rikoniMonthDatasets"
+          :title="`月別使用回数(${selectedYear.year()})`"
+          :max-y-axis="maxYAxisMonth"
+        />
+      </v-sheet>
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
