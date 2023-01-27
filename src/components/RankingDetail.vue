@@ -162,7 +162,7 @@
           <v-col class="pa-0 ma-0">{{ rikoniAvgRating }}</v-col>
         </v-row>
 
-        <v-sheet class="relative px-4 mt-1">
+        <v-sheet class="relative chart px-4 mt-1">
           <v-btn
             v-show="rikoniYearDatasetsPast.size"
             @click="moveElement('prev')"
@@ -184,16 +184,17 @@
           <ChartBar
             v-if="loadingYear"
             @click="onClickYearChart"
-            :bar-percentage="(rikoniYearDatasets.size / 5) * 0.9"
+            :bar-percentage="(rikoniYearDatasets.size / 5) * 0.5"
             :datasets="rikoniYearDatasets"
             title="年別使用回数"
             :max-y-axis="maxYAxisYear"
           />
         </v-sheet>
 
-        <v-sheet class="pa-4 py-0">
+        <v-sheet class="chart pa-4 py-0">
           <ChartBar
             v-if="loadingMonth"
+            :bar-percentage="0.5"
             :datasets="rikoniMonthDatasets"
             :title="`月別使用回数(${selectedYear.year()})`"
             :max-y-axis="maxYAxisMonth"
@@ -218,9 +219,14 @@
     top: 1px;
     left: 100px;
   }
+
   .next-year {
     position: absolute;
     top: 1px;
     right: 100px;
+  }
+
+  .chart {
+    height: 145px;
   }
 </style>
