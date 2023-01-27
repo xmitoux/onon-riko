@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue';
   import dayjs from 'dayjs';
+
   import { supabase } from '@/utils/supabase';
   import { useRankingDetails } from '@/utils/useRankingDetail';
   import { getMaxMapValue } from '@/utils/utils';
@@ -15,9 +16,6 @@
 
   const emit = defineEmits(['close']);
 
-  const currentYear = ref(dayjs());
-  const selectedYear = ref(dayjs());
-
   type RikoniTotal = {
     total_count: number;
     avg_do_time: number;
@@ -25,12 +23,12 @@
     avg_amount: number;
   };
 
+  // 総回数と平均値を取得する
   const rikoniTotalCount = ref(0);
   const rikoniAvgDoTime = ref(0);
   const rikoniAvgRating = ref(0);
   const showSnackbar = ref(false);
   const errorDetail = ref('');
-
   const getRikoniTotal = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_total', {
       in_image_id,
@@ -54,24 +52,24 @@
   };
   getRikoniTotal(props.imageId);
 
-  type RikoniPerYear = {
-    year: string;
-    count: number;
-  };
-
   const {
     rikoniYearDatasets,
     rikoniYearDatasetsPast,
     rikoniYearDatasetsFuture,
     rikoniMonthDatasets,
-    extractYearDatasets,
-    extractMonthDatasets,
+    extract5YearsDatasets,
+    getMonthDatasets,
     moveElement,
   } = useRankingDetails();
 
+  type RikoniPerYear = {
+    year: string;
+    count: number;
+  };
+
+  // 年別データセットを取得する
   let maxYAxisYear = 0;
   const loadingYear = ref(false);
-
   const getRikoniCountPerYear = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_per_year', {
       in_image_id,
@@ -83,8 +81,9 @@
       return;
     }
 
-    extractYearDatasets(data as RikoniPerYear[]);
+    extract5YearsDatasets(data as RikoniPerYear[]);
 
+    // 年別グラフのY軸の最大値(全ての年の中で最大の値)
     maxYAxisYear = getMaxMapValue([
       rikoniYearDatasets.value,
       rikoniYearDatasetsPast.value,
@@ -99,8 +98,8 @@
     count: number;
   };
 
+  // 月別データセットを取得する
   const loadingMonth = ref(false);
-
   const getRikoniCountPerMonth = async (
     in_image_id: number,
     in_year: number
@@ -116,16 +115,19 @@
       return;
     }
 
-    extractMonthDatasets(data as RikoniPerMonth[]);
+    getMonthDatasets(data as RikoniPerMonth[]);
 
     loadingMonth.value = true;
   };
-  getRikoniCountPerMonth(props.imageId, currentYear.value.year());
+  getRikoniCountPerMonth(props.imageId, dayjs().year());
 
+  // 月別グラフのY軸の最大値(月別データセット内の最大値を設定)
   const maxYAxisMonth = computed(() =>
     getMaxMapValue(rikoniMonthDatasets.value)
   );
 
+  // 年別グラフクリックでその年の月別グラフを表示する
+  const selectedYear = ref(dayjs());
   const onClickYearChart = (label: string) => {
     const year = Number(label);
     selectedYear.value = selectedYear.value.set('year', year);
