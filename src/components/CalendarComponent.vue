@@ -25,7 +25,6 @@
       return;
     }
 
-    console.log(data);
     rikoniRecords.value = data as RikoniRecordWithImage[];
   };
 
@@ -74,6 +73,10 @@
 
     selectedRecord.value = targetRecord[0];
   };
+
+  const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
+  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 </script>
 
 <template>
@@ -83,6 +86,17 @@
   <v-btn @click="currentDate = currentDate.add(1, 'month')">次の月</v-btn>
 
   <v-container>
+    <v-row>
+      <v-col
+        v-for="day in dayOfWeek"
+        class="text-center pa-0 ma-0 day-of-week"
+        :class="{ sunday: isSunday(day), saturday: isSaturday(day) }"
+        :key="day"
+      >
+        {{ day }}
+      </v-col>
+    </v-row>
+
     <v-row
       v-for="(week, index) in calendar"
       :style="{
@@ -144,4 +158,16 @@
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .day-of-week {
+    font-size: small;
+  }
+
+  .sunday {
+    color: tomato;
+  }
+
+  .saturday {
+    color: cornflowerblue;
+  }
+</style>
