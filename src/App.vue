@@ -1,33 +1,37 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import { ref } from 'vue';
+
+  const appBarTitle = ref('OnaOna(R)');
+</script>
 
 <template>
   <v-app>
     <v-app-bar class="text-center" :elevation="1">
-      <v-app-bar-title>OnaOna(R)</v-app-bar-title>
+      <v-app-bar-title>{{ appBarTitle }}</v-app-bar-title>
     </v-app-bar>
 
     <v-main>
       <router-view />
     </v-main>
 
-    <v-bottom-navigation :elevation="3" grow height="70">
-      <v-btn to="/">
+    <v-bottom-navigation :elevation="3" grow height="100">
+      <v-btn @click="appBarTitle = 'OnaOna(R)'" to="/">
         <v-icon icon="mdi-home" />
       </v-btn>
 
-      <v-btn to="/calendar">
+      <v-btn @click="appBarTitle = 'カレンダー'" to="/calendar">
         <v-icon icon="mdi-calendar-month" />
       </v-btn>
 
-      <v-btn to="/ranking">
+      <v-btn @click="appBarTitle = 'ランキング'" to="/ranking">
         <v-icon icon="mdi-crown" />
       </v-btn>
 
-      <v-btn>
+      <v-btn @click="appBarTitle = '統計'">
         <v-icon icon="mdi-chart-bar" />
       </v-btn>
 
-      <v-btn to="/settings">
+      <v-btn @click="appBarTitle = '設定'" to="/settings">
         <v-icon icon="mdi-cog" />
       </v-btn>
     </v-bottom-navigation>
