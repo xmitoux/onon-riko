@@ -85,7 +85,7 @@
   <v-btn @click="currentDate = dayjs()">今日</v-btn>
   <v-btn @click="currentDate = currentDate.add(1, 'month')">次の月</v-btn>
 
-  <v-container>
+  <v-container class="px-6">
     <v-row>
       <v-col
         v-for="day in dayOfWeek"
@@ -99,26 +99,29 @@
 
     <v-row
       v-for="(week, index) in calendar"
-      :style="{
-        'border-top': index === 0 ? 'solid 1px black' : '',
-        'border-left': 'solid 1px black',
-      }"
+      class="calendar-row"
+      :class="{ 'calendar-row-top': index === 0 }"
       :key="index"
     >
       <v-col
         v-for="(day, index) in week"
-        style="border-right: solid 1px black; border-bottom: solid 1px black"
+        class="calendar-cell pa-0"
         :key="index"
       >
-        <div v-if="day.date !== 0">
-          {{ day.date }}
-        </div>
-        <div style="height: 20px">
-          <v-icon
-            v-if="isDoneRikoni(day.date)"
-            @click="selectRecord(day.date)"
-            icon="mdi-heart"
-          />
+        <div>
+          <v-sheet v-if="day.date !== 0" class="pl-1" height="20">
+            {{ day.date }}
+          </v-sheet>
+
+          <div class="text-center">
+            <v-icon
+              v-if="isDoneRikoni(day.date)"
+              @click="selectRecord(day.date)"
+              color="pink"
+              icon="mdi-heart"
+              size="small"
+            />
+          </div>
         </div>
       </v-col>
     </v-row>
@@ -169,5 +172,19 @@
 
   .saturday {
     color: cornflowerblue;
+  }
+
+  .calendar-row {
+    border-left: solid 1px black;
+  }
+
+  .calendar-row-top {
+    border-top: solid 1px black;
+  }
+
+  .calendar-cell {
+    border-right: solid 1px black;
+    border-bottom: solid 1px black;
+    height: 50px;
   }
 </style>
