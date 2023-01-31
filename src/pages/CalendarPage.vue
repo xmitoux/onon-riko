@@ -14,7 +14,7 @@
       variant="text"
     />
 
-    {{ currentDate.year() }}/{{ currentDate.month() + 1 }}
+    {{ currentDate.year() }}/{{ currentDate.format('MM') }}
 
     <v-btn
       @click="currentDate = currentDate.add(1, 'month')"
