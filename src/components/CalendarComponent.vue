@@ -1,147 +1,127 @@
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue';
-  import dayjs from 'dayjs';
-  import { supabase } from '@/utils/supabase';
-  import type { Calendar, CalendarWeek, RikoniRecord, Image } from '@/types';
-  import { IMAGES_BUCKET_URL } from '@/consts';
+  import { ref, computed } from 'vue';
+  import dayjs, { Dayjs } from 'dayjs';
+  import type { RikoniRecordWithImage } from '@/types';
+  import { useCalendar } from '@/utils/useCalendar';
+  import CalendarDetail from '@/components/CalendarDetail.vue';
 
-  const currentDate = ref(dayjs());
-  const currentMonth = computed(() => currentDate.value.get('month'));
+  const props = defineProps<{
+    date: Dayjs;
+  }>();
 
-  type RikoniRecordWithImage = RikoniRecord & { images: Image };
+  const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+
+  const { getCalendar, getRecords } = useCalendar();
+
+  const calendar = computed(() => getCalendar(props.date));
+
   const rikoniRecords = ref<RikoniRecordWithImage[]>([]);
-  const getRikoniRecords = async () => {
-    const firstDayOfMonth = currentDate.value.startOf('month');
-    const lastDayOfMonth = currentDate.value.endOf('month');
-
-    const { data, error } = await supabase
-      .from('rikoni_records')
-      .select('*, images(*)')
-      .gte('started_at', firstDayOfMonth.format('YYYY-MM-DD HH:mm:ss'))
-      .lte('started_at', lastDayOfMonth.format('YYYY-MM-DD HH:mm:ss'));
-
-    // TODO: エラー処理
-    if (!data) {
-      return;
+  (async () => {
+    const { data, error } = await getRecords();
+    if (data) {
+      rikoniRecords.value = data;
     }
+  })();
 
-    console.log(data);
-    rikoniRecords.value = data as RikoniRecordWithImage[];
-  };
+  // レコードを表示中の年月でフィルタする
+  const filteredRecords = computed(() => {
+    return rikoniRecords.value.filter((record) => {
+      const tmp = dayjs(record.started_at);
 
-  watch(currentDate, () => getRikoniRecords(), { immediate: true });
+      return (
+        tmp.year() === props.date.year() && tmp.month() === props.date.month()
+      );
+    });
+  });
 
-  const getStartDate = () => {
-    const day1 = dayjs(currentDate.value).startOf('month');
-    const day1Number = day1.day();
-    return day1.subtract(day1Number, 'days');
-  };
-
-  const calendar = computed(() => getCalendar());
-  const getCalendar = (): Calendar => {
-    const tmpCalendar: Calendar = [];
-    let startDate = getStartDate();
-
-    for (let weekNumber = 0; weekNumber < 5; weekNumber++) {
-      const week: CalendarWeek = [];
-      for (let day = 0; day < 7; day++) {
-        const date =
-          startDate.get('month') === currentMonth.value
-            ? startDate.get('date')
-            : 0;
-        week.push({ date });
-        startDate = startDate.add(1, 'days');
-      }
-      tmpCalendar.push(week);
-    }
-
-    return tmpCalendar;
-  };
-
-  const isDoneRikoni = (day: number) => {
-    const startedDates = rikoniRecords.value.map((record) =>
-      dayjs(record.started_at).get('date')
+  const isDoneRikoni = (date: Dayjs) =>
+    filteredRecords.value.some(
+      (record) => dayjs(record.started_at).date() === date.date()
     );
 
-    return startedDates.some((date) => date === day);
-  };
-
   const selectedRecord = ref<RikoniRecordWithImage | null>(null);
-  const selectRecord = (day: number) => {
+  const selectRecord = (date: Dayjs) => {
     const targetRecord = rikoniRecords.value.filter(
-      (r) => dayjs(r.started_at).get('date') === day
+      (r) => dayjs(r.started_at).date() === date.date()
     );
 
     selectedRecord.value = targetRecord[0];
   };
+
+  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
+  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 </script>
 
 <template>
-  <span>{{ currentDate.get('year') }}/{{ currentMonth + 1 }}</span>
-  <v-btn @click="currentDate = currentDate.subtract(1, 'month')">前の月</v-btn>
-  <v-btn @click="currentDate = dayjs()">今日</v-btn>
-  <v-btn @click="currentDate = currentDate.add(1, 'month')">次の月</v-btn>
+  <v-container class="px-6">
+    <v-row>
+      <v-col
+        v-for="day in dayOfWeek"
+        class="text-center pa-0 ma-0 day-of-week"
+        :class="{ sunday: isSunday(day), saturday: isSaturday(day) }"
+        :key="day"
+      >
+        {{ day }}
+      </v-col>
+    </v-row>
 
-  <v-container>
     <v-row
       v-for="(week, index) in calendar"
-      :style="{
-        'border-top': index === 0 ? 'solid 1px black' : '',
-        'border-left': 'solid 1px black',
-      }"
+      class="calendar-row"
+      :class="{ 'calendar-row-top': index === 0 }"
       :key="index"
     >
       <v-col
-        v-for="(day, index) in week"
-        style="border-right: solid 1px black; border-bottom: solid 1px black"
+        v-for="(date, index) in week"
+        class="calendar-cell pa-0"
         :key="index"
       >
-        <div v-if="day.date !== 0">
-          {{ day.date }}
-        </div>
-        <div style="height: 20px">
-          <v-icon
-            v-if="isDoneRikoni(day.date)"
-            @click="selectRecord(day.date)"
-            icon="mdi-heart"
-          />
+        <div v-if="date">
+          <v-sheet class="pl-1" height="20">
+            {{ date.date() }}
+          </v-sheet>
+
+          <div class="text-center">
+            <v-icon
+              v-if="isDoneRikoni(date)"
+              @click="selectRecord(date)"
+              color="pink"
+              icon="mdi-heart"
+              size="small"
+            />
+          </div>
         </div>
       </v-col>
     </v-row>
   </v-container>
 
-  <v-container v-if="selectedRecord">
-    <v-row>
-      <v-col cols="3">実施日時</v-col>
-      <v-col>
-        {{ dayjs(selectedRecord.started_at).format('HH:mm') }} 〜
-        {{ dayjs(selectedRecord.finished_at).format('HH:mm') }}
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="3">評価</v-col>
-      <v-rating
-        :model-value="selectedRecord.rating"
-        color="pink"
-        disabled
-        empty-icon="mdi-heart-outline"
-        full-icon="mdi-heart"
-        half-icon="mdi-heart-half"
-        half-increments
-      ></v-rating>
-    </v-row>
-
-    <v-row>
-      <v-col cols="3">使用画像</v-col>
-      <v-img
-        class="pa-0"
-        max-height="200"
-        max-width="200"
-        :src="`${IMAGES_BUCKET_URL}/${selectedRecord.images.path}`"
-      ></v-img>
-    </v-row>
-  </v-container>
+  <CalendarDetail :record="selectedRecord" />
 </template>
 
-<style scoped></style>
+<style scoped>
+  .day-of-week {
+    font-size: small;
+  }
+
+  .sunday {
+    color: tomato;
+  }
+
+  .saturday {
+    color: cornflowerblue;
+  }
+
+  .calendar-row {
+    border-left: solid 1px black;
+  }
+
+  .calendar-row-top {
+    border-top: solid 1px black;
+  }
+
+  .calendar-cell {
+    border-right: solid 1px black;
+    border-bottom: solid 1px black;
+    height: 50px;
+  }
+</style>

@@ -1,3 +1,5 @@
+import type { Dayjs } from 'dayjs';
+
 export type Image = {
   id: number;
   path: string;
@@ -7,7 +9,7 @@ export type Image = {
 
 export type Calendar = CalendarWeek[];
 export type CalendarWeek = CalendarDate[];
-export type CalendarDate = { date: number };
+export type CalendarDate = Dayjs | null;
 
 export type RikoniRecord = {
   started_at: string;
@@ -26,3 +28,5 @@ export type RikoniRecord = {
   meal_condition: number;
   item_id: number;
 };
+
+export type RikoniRecordWithImage = RikoniRecord & { images: Image };
