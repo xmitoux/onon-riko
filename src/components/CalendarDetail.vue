@@ -7,38 +7,39 @@
 </script>
 
 <template>
-  <v-container v-if="props.record" class="py-0">
-    <v-row align="center" class="ma-1">
-      <v-col class="text-center" cols="4">実施日時</v-col>
-      <v-col>
+  <v-container v-if="props.record" class="py-2">
+    <v-img
+      height="250"
+      :src="`${IMAGES_BUCKET_URL}/${props.record.images.path}`"
+    />
+
+    <v-row align="center" class="pl-3 ma-1">
+      <v-col class="text-center py-0" cols="5">実施日</v-col>
+      <v-col class="py-0">
+        {{ dayjs(props.record.started_at).format('YYYY/MM/DD') }}
+      </v-col>
+    </v-row>
+
+    <v-row align="center" class="pl-3 ma-1">
+      <v-col class="text-center py-0" cols="5">実施時間</v-col>
+      <v-col class="py-0">
         {{ dayjs(props.record.started_at).format('HH:mm') }} 〜
         {{ dayjs(props.record.finished_at).format('HH:mm') }}
       </v-col>
     </v-row>
 
-    <v-row align="start" class="ma-1">
-      <v-col class="text-center" cols="4">使用画像</v-col>
-      <v-col>
-        <v-img
-          max-height="200"
-          max-width="200"
-          :src="`${IMAGES_BUCKET_URL}/${props.record.images.path}`"
-        />
-      </v-col>
-    </v-row>
-
-    <v-row align="center" class="ma-1">
-      <v-col class="text-center" cols="4">評価</v-col>
+    <v-row align="center" class="pl-3 ma-1">
+      <v-col class="text-center py-0" cols="5">評価</v-col>
       <v-rating
         :model-value="props.record.rating"
-        class="pl-1"
+        class="pl-2"
         color="pink"
         disabled
         empty-icon="mdi-heart-outline"
         full-icon="mdi-heart"
         half-icon="mdi-heart-half"
         half-increments
-        size="35"
+        size="25"
       />
     </v-row>
   </v-container>
