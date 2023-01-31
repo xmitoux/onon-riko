@@ -1,7 +1,11 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, onUnmounted, ref } from 'vue';
   import dayjs from 'dayjs';
+  import { lockScroll, unlockScroll } from '@/utils/utils';
   import RikoniRecord from '@/components/RikoniRecord.vue';
+
+  onMounted(() => lockScroll());
+  onUnmounted(() => unlockScroll());
 
   const showRecordDialog = ref(false);
 
@@ -13,7 +17,7 @@
   const finishedAt = ref('');
   const finishRikoni = () => {
     finishedAt.value = dayjs().format('YYYY-MM-DD HH:mm');
-    showRecordDialog.value = true;
+    openDialog();
   };
 
   const clearTime = () => {
@@ -23,7 +27,17 @@
 
   const startManualRikoni = () => {
     clearTime();
+    openDialog();
+  };
+
+  const openDialog = () => {
     showRecordDialog.value = true;
+    unlockScroll();
+  };
+
+  const onCloseDialog = () => {
+    clearTime();
+    lockScroll();
   };
 </script>
 
@@ -55,6 +69,6 @@
   <RikoniRecord
     v-model="showRecordDialog"
     :auto="{ startedAt, finishedAt }"
-    @close="clearTime"
+    @close="onCloseDialog"
   />
 </template>
