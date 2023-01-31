@@ -1,9 +1,13 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, onUnmounted, ref } from 'vue';
   import dayjs from 'dayjs';
   import CalendarComponent from '@/components/CalendarComponent.vue';
+  import { lockScroll, unlockScroll } from '@/utils/utils';
 
   const currentDate = ref(dayjs());
+
+  onMounted(() => lockScroll());
+  onUnmounted(() => unlockScroll());
 </script>
 
 <template>

@@ -32,3 +32,21 @@ export const getMaxMapValue = (
 
   return maxValue;
 };
+
+const noScroll = (e: Event) => e.preventDefault();
+
+export const lockScroll = () => {
+  document.addEventListener('touchmove', noScroll, {
+    passive: false,
+  });
+
+  document.addEventListener('mousewheel', noScroll, {
+    passive: false,
+  });
+};
+
+export const unlockScroll = () => {
+  document.removeEventListener('touchmove', noScroll);
+
+  document.removeEventListener('mousewheel', noScroll);
+};
