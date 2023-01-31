@@ -95,7 +95,7 @@
     </v-row>
   </v-container>
 
-  <CalendarDetail v-if="selectedRecord" :record="selectedRecord" />
+  <CalendarDetail :record="selectedRecord" />
 </template>
 
 <style scoped>
