@@ -25,6 +25,7 @@
       <v-col class="py-0">
         {{ dayjs(props.record.started_at).format('HH:mm') }} 〜
         {{ dayjs(props.record.finished_at).format('HH:mm') }}
+        ({{ props.record.do_time }}分)
       </v-col>
     </v-row>
 
