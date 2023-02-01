@@ -4,6 +4,7 @@
   import type { RikoniRecordWithImage } from '@/types';
   import { useCalendar } from '@/utils/useCalendar';
   import CalendarDetail from '@/components/CalendarDetail.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
     date: Dayjs;
@@ -15,9 +16,19 @@
 
   const calendar = computed(() => getCalendar(props.date));
 
+  const showSnackbar = ref(false);
+  const errorDetail = ref('');
+
   const rikoniRecords = ref<RikoniRecordWithImage[]>([]);
   (async () => {
     const { data, error } = await getRecords();
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
+    }
+
     if (data) {
       rikoniRecords.value = data;
     }
@@ -54,6 +65,12 @@
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="レコードの取得に失敗しました。"
+    :error-detail="errorDetail"
+  />
+
   <v-container class="px-6">
     <v-row>
       <v-col
