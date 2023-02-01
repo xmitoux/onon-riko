@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs';
-import type { Calendar, CalendarWeek, RikoniRecordWithImage } from '@/types';
 import { supabase } from './supabase';
+import type { Calendar, CalendarWeek, RikoniRecordWithImage } from '@/types';
 
 const getStartDate = (date: Dayjs) => {
   const day1 = date.startOf('month');

@@ -4,20 +4,33 @@
   import type { RikoniRecordWithImage } from '@/types';
   import { useCalendar } from '@/utils/useCalendar';
   import CalendarDetail from '@/components/CalendarDetail.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
     date: Dayjs;
   }>();
 
   const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
+  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 
   const { getCalendar, getRecords } = useCalendar();
 
   const calendar = computed(() => getCalendar(props.date));
 
+  const showSnackbar = ref(false);
+  const errorDetail = ref('');
+
   const rikoniRecords = ref<RikoniRecordWithImage[]>([]);
   (async () => {
     const { data, error } = await getRecords();
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
+    }
+
     if (data) {
       rikoniRecords.value = data;
     }
@@ -34,25 +47,29 @@
     });
   });
 
-  const isDoneRikoni = (date: Dayjs) =>
-    filteredRecords.value.some(
+  const isDoneRikoni = (date: Dayjs) => {
+    return filteredRecords.value.some(
       (record) => dayjs(record.started_at).date() === date.date()
     );
+  };
 
   const selectedRecord = ref<RikoniRecordWithImage | null>(null);
   const selectRecord = (date: Dayjs) => {
-    const targetRecord = rikoniRecords.value.filter(
+    const targetRecord = filteredRecords.value.filter(
       (r) => dayjs(r.started_at).date() === date.date()
     );
 
     selectedRecord.value = targetRecord[0];
   };
-
-  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
-  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="レコードの取得に失敗しました。"
+    :error-detail="errorDetail"
+  />
+
   <v-container class="px-6">
     <v-row>
       <v-col
