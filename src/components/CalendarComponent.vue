@@ -34,14 +34,15 @@
     });
   });
 
-  const isDoneRikoni = (date: Dayjs) =>
-    filteredRecords.value.some(
+  const isDoneRikoni = (date: Dayjs) => {
+    return filteredRecords.value.some(
       (record) => dayjs(record.started_at).date() === date.date()
     );
+  };
 
   const selectedRecord = ref<RikoniRecordWithImage | null>(null);
   const selectRecord = (date: Dayjs) => {
-    const targetRecord = rikoniRecords.value.filter(
+    const targetRecord = filteredRecords.value.filter(
       (r) => dayjs(r.started_at).date() === date.date()
     );
 
