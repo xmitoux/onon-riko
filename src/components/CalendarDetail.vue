@@ -9,7 +9,7 @@
 <template>
   <v-container v-if="props.record" class="py-2">
     <v-img
-      height="250"
+      height="200"
       :src="`${IMAGES_BUCKET_URL}/${props.record.images.path}`"
     />
 
