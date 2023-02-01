@@ -11,6 +11,8 @@
   }>();
 
   const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
+  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 
   const { getCalendar, getRecords } = useCalendar();
 
@@ -59,9 +61,6 @@
 
     selectedRecord.value = targetRecord[0];
   };
-
-  const isSaturday = (dayOfWeek: string) => dayOfWeek === '土';
-  const isSunday = (dayOfWeek: string) => dayOfWeek === '日';
 </script>
 
 <template>
