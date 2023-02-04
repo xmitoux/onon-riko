@@ -56,7 +56,11 @@
     observer.value = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry && entry.isIntersecting) {
-        getImages();
+        if (images.value.length) {
+          // 画面を開いた直後は無限スクロールによる画像取得はしない
+          // (createdでのgetImages()と同時に実行され画像を重複して取得してしまうため)
+          getImages();
+        }
       }
     });
 
