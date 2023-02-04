@@ -1,9 +1,10 @@
 <script setup lang="ts">
-  import { ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image } from '@/types';
   import SnackbarError from '@/components/SncakbarError.vue';
+  import TagFilter from '@/components/ImageTagFilter.vue';
 
   const props = defineProps<{ open: boolean }>();
   const emit = defineEmits<{
@@ -41,7 +42,6 @@
 
     return;
   };
-
   getImages();
 
   // 無限スクロール処理
@@ -69,7 +69,45 @@
     selectedImage.value = null;
   };
 
-  const drawer = ref(false);
+  const tagFilterDrawer = ref(false);
+  const selectedTags = ref<number[]>([]);
+  const selectImageTag = (tags: number[]) => {
+    selectedTags.value = tags;
+    tagFilterDrawer.value = false;
+  };
+
+  type ImageTagMap = { image_id: number; tag_id: number };
+  const imageTagMap = ref<ImageTagMap[]>([]);
+  const getImageTagMap = async () => {
+    const { data, error } = await supabase.from('image_tag_map').select();
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
+    }
+
+    imageTagMap.value = data as ImageTagMap[];
+
+    return;
+  };
+  getImageTagMap();
+
+  const filteredImages = computed(() => {
+    if (!selectedTags.value.length) {
+      return images.value;
+    }
+
+    const filteredImageTagMap = imageTagMap.value
+      .filter((map) => selectedTags.value.includes(map.tag_id))
+      .map((map) => map.image_id);
+
+    const filteredImagesByTag = images.value.filter((image) =>
+      filteredImageTagMap.includes(image.id)
+    );
+
+    return filteredImagesByTag;
+  });
 </script>
 
 <template>
@@ -87,23 +125,25 @@
     />
 
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="tagFilterDrawer"
       location="right"
       temporary
       width="350"
-    ></v-navigation-drawer>
+    >
+      <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
+    </v-navigation-drawer>
 
     <v-card class="text-center">
       <v-toolbar color="white">
         <v-toolbar-title class="pl-10">画像を選択する</v-toolbar-title>
 
-        <v-btn @click="drawer = !drawer" icon="mdi-filter" />
+        <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
       </v-toolbar>
       <v-card-text class="pa-0">
         <v-container>
           <v-row>
             <v-col
-              v-for="image in images"
+              v-for="image in filteredImages"
               :key="image.id"
               class="pa-1"
               cols="6"
