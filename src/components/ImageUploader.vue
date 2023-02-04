@@ -2,6 +2,8 @@
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
   import type { ImageTag } from '@/types';
+  import SnackbarError from '@/components/SncakbarError.vue';
+  import { useSnackbarError } from '@/utils/use-snackbar-error';
 
   const emit = defineEmits(['close']);
 
@@ -40,34 +42,39 @@
     fileReader.readAsDataURL(uploadFile.value);
   };
 
+  const { showSnackbar, errorMessage, errorDetail, showSnackbarError } =
+    useSnackbarError();
+
   const uploadedImagePath = ref('');
   const uploadImage = async () => {
     if (!uploadFile.value) {
-      // TODO: 警告ダイアログ
-      console.log('画像を選択してください');
+      showSnackbarError('画像を選択してください。');
       return;
     }
 
     const { data, error } = await supabase.storage
       .from('riko-images')
-      .upload(uploadFile.value.name, uploadFile.value)
-      .catch();
+      .upload(uploadFile.value.name, uploadFile.value);
 
-    // TODO: エラー処理 409: 重複画像
-
-    if (!data) {
+    if (error || !data) {
+      showSnackbarError(
+        '画像の登録(ストレージ)に失敗しました。',
+        error.message
+      );
       return;
     }
 
     uploadedImagePath.value = data.path;
 
-    const { data: data2, error: error2 } = await supabase.rpc(
-      'insert_image_with_tag',
-      { in_image_path: uploadedImagePath.value, in_tag_ids: selectedTags.value }
-    );
-    // .select('*');
+    const { error: error2 } = await supabase.rpc('insert_image_with_tag', {
+      in_image_path: uploadedImagePath.value,
+      in_tag_ids: selectedTags.value,
+    });
 
-    // TODO: エラー処理\
+    if (error2) {
+      showSnackbarError('画像の登録(DB)に失敗しました。', error2.details);
+      return;
+    }
 
     closeDialog();
   };
@@ -84,21 +91,25 @@
       .select('*')
       .order('display_order');
 
-    // TODO: エラー処理
-
-    if (!data) {
+    if (error || !data) {
+      showSnackbarError('タグの取得に失敗しました。', error.details);
       return;
     }
 
     imageTags.value = data as ImageTag[];
   };
-
   getTags();
 
   const selectedTags = ref<number[]>([]);
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
+
   <v-card class="text-center" title="画像を登録する">
     <v-card-text class="pa-2">
       <v-container class="pa-0">
