@@ -61,10 +61,11 @@
 
     uploadedImagePath.value = data.path;
 
-    const { data: data2, error: error2 } = await supabase
-      .from('images')
-      .insert({ path: uploadedImagePath.value, is_fav: fav.value })
-      .select('*');
+    const { data: data2, error: error2 } = await supabase.rpc(
+      'insert_image_with_tag',
+      { in_image_path: uploadedImagePath.value, in_tag_ids: selectedTags.value }
+    );
+    // .select('*');
 
     // TODO: エラー処理\
 
@@ -95,6 +96,8 @@
   };
 
   getTags();
+
+  const selectedTags = ref<number[]>([]);
 </script>
 
 <template>
@@ -129,7 +132,12 @@
         </v-row>
 
         <template v-for="imageTag in imageTags" :key="imageTag.id">
-          <v-checkbox hide-details :label="imageTag.name" />
+          <v-checkbox
+            v-model="selectedTags"
+            hide-details
+            :label="imageTag.name"
+            :value="imageTag.id"
+          />
         </template>
 
         <v-row class="ma-1" align="center" justify="space-between">
