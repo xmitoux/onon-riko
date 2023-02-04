@@ -31,6 +31,11 @@
   const onCancel = () => {
     emit('cancel');
   };
+
+  const onReset = () => {
+    selectedTags.value = [];
+    emit('ok', selectedTags.value);
+  };
 </script>
 
 <template>
@@ -54,6 +59,7 @@
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
+      <v-btn variant="outlined" @click="onReset">リセット</v-btn>
       <v-btn variant="outlined" @click="onCancel">キャンセル</v-btn>
       <v-btn variant="outlined" @click="onOk">OK</v-btn>
     </v-card-actions>
