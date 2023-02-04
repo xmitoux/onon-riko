@@ -119,49 +119,60 @@
     :error-detail="errorDetail"
   />
 
-  <v-navigation-drawer
-    v-model="tagFilterDrawer"
-    location="right"
-    temporary
-    width="350"
-  >
-    <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
-  </v-navigation-drawer>
-
   <v-card class="text-center">
-    <v-toolbar color="white">
-      <v-toolbar-title class="pl-10">画像を選択する</v-toolbar-title>
+    <v-layout>
+      <v-app-bar class="elevation-0" color="white">
+        <v-app-bar-title class="pl-10">画像を選択する</v-app-bar-title>
 
-      <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
-    </v-toolbar>
-    <v-card-text class="pa-0">
-      <v-container>
-        <v-row>
-          <v-col
-            v-for="image in filteredImages"
-            :key="image.id"
-            class="pa-1"
-            cols="6"
-          >
-            <v-img
-              @click="(selectedImage = image), closeDialog()"
-              aspect-ratio="1"
-              cover
-              :src="`${IMAGES_BUCKET_URL}/${image.path}`"
-            >
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="grey-lighten-5" />
-                </v-row>
-              </template>
-            </v-img>
-          </v-col>
+        <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
+      </v-app-bar>
 
-          <!-- 無限スクロール監視用要素 -->
-          <div ref="observingTarget"></div>
-        </v-row>
-      </v-container>
-    </v-card-text>
+      <v-navigation-drawer
+        v-model="tagFilterDrawer"
+        location="right"
+        temporary
+        width="350"
+      >
+        <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
+      </v-navigation-drawer>
+
+      <v-main class="scrollable">
+        <v-card-text class="pa-0">
+          <v-container>
+            <v-row>
+              <v-col
+                v-for="image in filteredImages"
+                :key="image.id"
+                class="pa-1"
+                cols="6"
+              >
+                <v-img
+                  @click="(selectedImage = image), closeDialog()"
+                  aspect-ratio="1"
+                  cover
+                  :src="`${IMAGES_BUCKET_URL}/${image.path}`"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        color="grey-lighten-5"
+                      />
+                    </v-row>
+                  </template>
+                </v-img>
+              </v-col>
+
+              <div ref="observingTarget"></div>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-main>
+    </v-layout>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
       <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
@@ -169,4 +180,8 @@
   </v-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .scrollable {
+    overflow: scroll;
+  }
+</style>
