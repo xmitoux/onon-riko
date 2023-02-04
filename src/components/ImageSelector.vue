@@ -68,6 +68,8 @@
     emit('close', selectedImage.value);
     selectedImage.value = null;
   };
+
+  const drawer = ref(false);
 </script>
 
 <template>
@@ -84,7 +86,19 @@
       :error-detail="errorDetail"
     />
 
-    <v-card class="text-center" title="画像を選択する">
+    <v-navigation-drawer
+      v-model="drawer"
+      location="right"
+      temporary
+      width="350"
+    ></v-navigation-drawer>
+
+    <v-card class="text-center">
+      <v-toolbar color="white">
+        <v-toolbar-title class="pl-10">画像を選択する</v-toolbar-title>
+
+        <v-btn @click="drawer = !drawer" icon="mdi-filter" />
+      </v-toolbar>
       <v-card-text class="pa-0">
         <v-container>
           <v-row>
@@ -124,3 +138,5 @@
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped></style>
