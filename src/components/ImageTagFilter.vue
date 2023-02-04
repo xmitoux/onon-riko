@@ -34,13 +34,17 @@
 </script>
 
 <template>
-  <v-card class="text-center" title="タグフィルタ">
+  <v-divider />
+  <v-card class="elevation-2 text-center" title="タグフィルタ">
     <v-card-text class="pa-0">
-      <v-container>
+      <v-container class="tag-area">
         <v-row>
           <v-col v-for="tag in imageTags" :key="tag.id" class="pa-1" cols="6">
             <v-checkbox
               v-model="selectedTags"
+              class="tag-label"
+              color="pink"
+              hide-details
               :label="tag.name"
               :value="tag.id"
             />
@@ -56,4 +60,13 @@
   </v-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .tag-area {
+    height: 590px;
+    overflow: scroll;
+  }
+
+  .tag-label >>> .v-label {
+    font-size: small;
+  }
+</style>
