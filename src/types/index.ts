@@ -30,3 +30,8 @@ export type RikoniRecord = {
 };
 
 export type RikoniRecordWithImage = RikoniRecord & { images: Image };
+
+export type ImageTag = {
+  id: number;
+  name: string;
+};

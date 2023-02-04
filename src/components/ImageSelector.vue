@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image } from '@/types';
   import SnackbarError from '@/components/SncakbarError.vue';
+  import TagFilter from '@/components/ImageTagFilter.vue';
 
-  const props = defineProps<{ open: boolean }>();
   const emit = defineEmits<{
     (e: 'close', selectedImage: Image | null): void;
   }>();
@@ -41,7 +41,6 @@
 
     return;
   };
-
   getImages();
 
   // 無限スクロール処理
@@ -57,7 +56,11 @@
     observer.value = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry && entry.isIntersecting) {
-        getImages();
+        if (images.value.length) {
+          // 画面を開いた直後は無限スクロールによる画像取得はしない
+          // (createdでのgetImages()と同時に実行され画像を重複して取得してしまうため)
+          getImages();
+        }
       }
     });
 
@@ -66,61 +69,119 @@
 
   const closeDialog = () => {
     emit('close', selectedImage.value);
-    selectedImage.value = null;
   };
+
+  const tagFilterDrawer = ref(false);
+  const selectedTags = ref<number[]>([]);
+  const selectImageTag = (tags: number[]) => {
+    selectedTags.value = tags;
+    tagFilterDrawer.value = false;
+  };
+
+  type ImageTagMap = { image_id: number; tag_id: number };
+  const imageTagMap = ref<ImageTagMap[]>([]);
+  const getImageTagMap = async () => {
+    const { data, error } = await supabase.from('image_tag_map').select();
+
+    if (error) {
+      errorDetail.value = error.message;
+      showSnackbar.value = true;
+      return;
+    }
+
+    imageTagMap.value = data as ImageTagMap[];
+
+    return;
+  };
+  getImageTagMap();
+
+  const filteredImages = computed(() => {
+    if (!selectedTags.value.length) {
+      return images.value;
+    }
+
+    const filteredImageTagMap = imageTagMap.value
+      .filter((map) => selectedTags.value.includes(map.tag_id))
+      .map((map) => map.image_id);
+
+    const filteredImagesByTag = images.value.filter((image) =>
+      filteredImageTagMap.includes(image.id)
+    );
+
+    return filteredImagesByTag;
+  });
 </script>
 
 <template>
-  <v-dialog
-    :model-value="props.open"
-    fullscreen
-    scrollable
-    transition="dialog-bottom-transition"
-  >
-    <SnackbarError
-      v-if="props.open"
-      v-model="showSnackbar"
-      error-message="画像の取得に失敗しました。"
-      :error-detail="errorDetail"
-    />
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="画像の取得に失敗しました。"
+    :error-detail="errorDetail"
+  />
 
-    <v-card class="text-center" title="画像を選択する">
-      <v-card-text class="pa-0">
-        <v-container>
-          <v-row>
-            <v-col
-              v-for="image in images"
-              :key="image.id"
-              class="pa-1"
-              cols="6"
-            >
-              <v-img
-                @click="(selectedImage = image), closeDialog()"
-                aspect-ratio="1"
-                cover
-                :src="`${IMAGES_BUCKET_URL}/${image.path}`"
+  <v-card class="text-center">
+    <v-layout>
+      <v-app-bar class="elevation-0" color="white">
+        <v-app-bar-title class="pl-10">画像を選択する</v-app-bar-title>
+
+        <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
+      </v-app-bar>
+
+      <v-navigation-drawer
+        v-model="tagFilterDrawer"
+        location="right"
+        temporary
+        width="350"
+      >
+        <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
+      </v-navigation-drawer>
+
+      <v-main class="scrollable">
+        <v-card-text class="pa-0">
+          <v-container>
+            <v-row>
+              <v-col
+                v-for="image in filteredImages"
+                :key="image.id"
+                class="pa-1"
+                cols="6"
               >
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular indeterminate color="grey-lighten-5" />
-                  </v-row>
-                </template>
-              </v-img>
-            </v-col>
+                <v-img
+                  @click="(selectedImage = image), closeDialog()"
+                  aspect-ratio="1"
+                  cover
+                  :src="`${IMAGES_BUCKET_URL}/${image.path}`"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        color="grey-lighten-5"
+                      />
+                    </v-row>
+                  </template>
+                </v-img>
+              </v-col>
 
-            <!-- 無限スクロール監視用要素 -->
-            <div ref="observingTarget"></div>
-          </v-row>
-        </v-container>
-      </v-card-text>
+              <div ref="observingTarget"></div>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-main>
+    </v-layout>
 
-      <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-card-actions class="d-flex justify-end pb-6 pr-4">
+      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
+
+<style scoped>
+  .scrollable {
+    overflow: scroll;
+  }
+</style>
