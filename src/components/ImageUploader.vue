@@ -77,8 +77,6 @@
     attachedImage.value = null;
   };
 
-  const fav = ref(false);
-
   const imageTags = ref<ImageTag[]>([]);
   const getTags = async () => {
     const { data, error } = await supabase
@@ -139,12 +137,6 @@
             :value="imageTag.id"
           />
         </template>
-
-        <v-row class="ma-1" align="center" justify="space-between">
-          <v-col cols="4">お気に入り</v-col>
-
-          <v-col><v-switch color="blue" inset v-model="fav" /></v-col>
-        </v-row>
       </v-container>
     </v-card-text>
 
