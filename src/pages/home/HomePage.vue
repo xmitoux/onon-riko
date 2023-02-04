@@ -36,6 +36,7 @@
   };
 
   const onCloseDialog = () => {
+    showRecordDialog.value = false;
     clearTime();
     lockScroll();
   };
@@ -66,9 +67,12 @@
     </v-row>
   </v-container>
 
-  <RikoniRecord
+  <v-dialog
     v-model="showRecordDialog"
-    :auto="{ startedAt, finishedAt }"
-    @close="onCloseDialog"
-  />
+    fullscreen
+    scrollable
+    transition="dialog-bottom-transition"
+  >
+    <RikoniRecord :auto="{ startedAt, finishedAt }" @close="onCloseDialog" />
+  </v-dialog>
 </template>

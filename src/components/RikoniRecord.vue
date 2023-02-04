@@ -8,7 +8,6 @@
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
-    modelValue: boolean;
     auto?: { startedAt: string; finishedAt: string };
   }>();
 
@@ -100,201 +99,189 @@
   };
 
   const closeDialog = () => {
-    selectedImage.value = null;
-    rating.value = 0;
-    amount.value = 3;
-    bodyPosition.value = 1;
-    isDrunk.value = false;
-    isSleepy.value = false;
-    isPreExcited.value = false;
-    doneWork.value = false;
-    doneExercise.value = false;
-    mealCondition.value = 1;
-
-    emit('update:modelValue', false);
     emit('close');
   };
 </script>
 
 <template>
-  <ImageSelector :open="showImageSelector" @close="onCloseImageSelector" />
-
   <v-dialog
-    :model-value="props.modelValue"
+    v-model="showImageSelector"
     fullscreen
     scrollable
     transition="dialog-bottom-transition"
   >
-    <SnackbarError
-      v-model="showSnackbar"
-      error-message="登録に失敗しました。"
-      :error-detail="errorDetail"
-    />
-
-    <v-card class="text-center" title="記録する">
-      <v-card-text class="pa-0">
-        <v-container class="pa-0">
-          <v-row align="center" class="ma-1">
-            <v-col cols="4">開始日時</v-col>
-            <v-col>
-              <v-text-field
-                v-model="startedAt"
-                hide-details
-                type="datetime-local"
-              />
-            </v-col>
-          </v-row>
-
-          <v-row align="center" class="ma-1">
-            <v-col cols="4">終了日時</v-col>
-            <v-col>
-              <v-text-field
-                v-model="finishedAt"
-                hide-details
-                type="datetime-local"
-              />
-            </v-col>
-          </v-row>
-
-          <v-row align="center" class="ma-1">
-            <v-col cols="4">使用画像</v-col>
-            <v-col>
-              <v-btn
-                prepend-icon="mdi-image-search"
-                @click="showImageSelector = true"
-              >
-                選択
-              </v-btn>
-            </v-col>
-            <v-col>
-              <v-btn v-if="selectedImage" @click="selectedImage = null">
-                削除
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-row v-if="selectedImage" class="ma-1">
-            <v-col cols="4" />
-            <v-img
-              class="px-3"
-              max-height="230"
-              :src="`${IMAGES_BUCKET_URL}/${selectedImage.path}`"
-            ></v-img>
-          </v-row>
-
-          <v-row align="center" class="ma-1">
-            <v-col class="" cols="4">評価</v-col>
-            <v-rating
-              v-model="rating"
-              class="pl-1"
-              color="pink"
-              empty-icon="mdi-heart-outline"
-              full-icon="mdi-heart"
-              half-icon="mdi-heart-half"
-              half-increments
-              size="35"
-            />
-          </v-row>
-
-          <v-row class="ma-1">
-            <v-col cols="4">量</v-col>
-            <v-col class="pt-1 pl-0 pb-0">
-              <v-radio-group v-model="amount" color="pink" hide-details>
-                <v-radio label="多い" :value="5"></v-radio>
-                <v-radio label="ちょっと多い" :value="4"></v-radio>
-                <v-radio label="普通" :value="3"></v-radio>
-                <v-radio label="ちょっと少ない" :value="2"></v-radio>
-                <v-radio label="少ない" :value="1"></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-
-          <v-row class="ma-1">
-            <v-col cols="4">体位</v-col>
-
-            <v-col class="pt-1 pl-0 pb-0">
-              <v-radio-group v-model="bodyPosition" color="pink" hide-details>
-                <v-radio label="座位" :value="1"></v-radio>
-                <v-radio label="伏位" :value="2"></v-radio>
-                <v-radio label="立位" :value="3"></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-
-          <v-row align="center" class="ma-1">
-            <v-col cols="4">体調</v-col>
-
-            <v-col class="ma-0 pa-0" cols="4">
-              <v-checkbox
-                v-model="isDrunk"
-                color="pink"
-                hide-details
-                label="飲酒"
-              />
-            </v-col>
-
-            <v-col class="ma-0 pa-0" cols="4">
-              <v-checkbox
-                v-model="isSleepy"
-                color="pink"
-                hide-details
-                label="眠気"
-              />
-            </v-col>
-          </v-row>
-
-          <v-row class="ma-1">
-            <v-col cols="4" />
-
-            <v-col class="ma-0 pa-0" cols="4">
-              <v-checkbox
-                v-model="doneWork"
-                color="pink"
-                hide-details
-                label="運動"
-              />
-            </v-col>
-
-            <v-col class="ma-0 pa-0" cols="4">
-              <v-checkbox
-                v-model="doneExercise"
-                color="pink"
-                hide-details
-                label="労働"
-              />
-            </v-col>
-          </v-row>
-
-          <v-row class="ma-1">
-            <v-col cols="4" />
-            <v-col class="ma-0 pa-0" cols="4">
-              <v-checkbox
-                v-model="isPreExcited"
-                color="pink"
-                hide-details
-                label="事前の興奮"
-              />
-            </v-col>
-            <v-col cols="4" />
-          </v-row>
-
-          <v-row class="ma-1">
-            <v-col cols="4">食事状態</v-col>
-            <v-col class="pt-1 pl-0 pb-0">
-              <v-radio-group v-model="mealCondition" color="pink" hide-details>
-                <v-radio label="食前" :value="1"></v-radio>
-                <v-radio label="食間" :value="2"></v-radio>
-                <v-radio label="食後" :value="3"></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-
-      <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
-        <v-btn variant="outlined" @click="recordRikoni">OK</v-btn>
-      </v-card-actions>
-    </v-card>
+    <ImageSelector @close="onCloseImageSelector" />
   </v-dialog>
+
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="登録に失敗しました。"
+    :error-detail="errorDetail"
+  />
+
+  <v-card class="text-center" title="記録する">
+    <v-card-text class="pa-0">
+      <v-container class="pa-0">
+        <v-row align="center" class="ma-1">
+          <v-col cols="4">開始日時</v-col>
+          <v-col>
+            <v-text-field
+              v-model="startedAt"
+              hide-details
+              type="datetime-local"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row align="center" class="ma-1">
+          <v-col cols="4">終了日時</v-col>
+          <v-col>
+            <v-text-field
+              v-model="finishedAt"
+              hide-details
+              type="datetime-local"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row align="center" class="ma-1">
+          <v-col cols="4">使用画像</v-col>
+          <v-col>
+            <v-btn
+              prepend-icon="mdi-image-search"
+              @click="showImageSelector = true"
+            >
+              選択
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn v-if="selectedImage" @click="selectedImage = null">
+              削除
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row v-if="selectedImage" class="ma-1">
+          <v-col cols="4" />
+          <v-img
+            class="px-3"
+            max-height="230"
+            :src="`${IMAGES_BUCKET_URL}/${selectedImage.path}`"
+          ></v-img>
+        </v-row>
+
+        <v-row align="center" class="ma-1">
+          <v-col class="" cols="4">評価</v-col>
+          <v-rating
+            v-model="rating"
+            class="pl-1"
+            color="pink"
+            empty-icon="mdi-heart-outline"
+            full-icon="mdi-heart"
+            half-icon="mdi-heart-half"
+            half-increments
+            size="35"
+          />
+        </v-row>
+
+        <v-row class="ma-1">
+          <v-col cols="4">量</v-col>
+          <v-col class="pt-1 pl-0 pb-0">
+            <v-radio-group v-model="amount" color="pink" hide-details>
+              <v-radio label="多い" :value="5"></v-radio>
+              <v-radio label="ちょっと多い" :value="4"></v-radio>
+              <v-radio label="普通" :value="3"></v-radio>
+              <v-radio label="ちょっと少ない" :value="2"></v-radio>
+              <v-radio label="少ない" :value="1"></v-radio>
+            </v-radio-group>
+          </v-col>
+        </v-row>
+
+        <v-row class="ma-1">
+          <v-col cols="4">体位</v-col>
+
+          <v-col class="pt-1 pl-0 pb-0">
+            <v-radio-group v-model="bodyPosition" color="pink" hide-details>
+              <v-radio label="座位" :value="1"></v-radio>
+              <v-radio label="伏位" :value="2"></v-radio>
+              <v-radio label="立位" :value="3"></v-radio>
+            </v-radio-group>
+          </v-col>
+        </v-row>
+
+        <v-row align="center" class="ma-1">
+          <v-col cols="4">体調</v-col>
+
+          <v-col class="ma-0 pa-0" cols="4">
+            <v-checkbox
+              v-model="isDrunk"
+              color="pink"
+              hide-details
+              label="飲酒"
+            />
+          </v-col>
+
+          <v-col class="ma-0 pa-0" cols="4">
+            <v-checkbox
+              v-model="isSleepy"
+              color="pink"
+              hide-details
+              label="眠気"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row class="ma-1">
+          <v-col cols="4" />
+
+          <v-col class="ma-0 pa-0" cols="4">
+            <v-checkbox
+              v-model="doneWork"
+              color="pink"
+              hide-details
+              label="運動"
+            />
+          </v-col>
+
+          <v-col class="ma-0 pa-0" cols="4">
+            <v-checkbox
+              v-model="doneExercise"
+              color="pink"
+              hide-details
+              label="労働"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row class="ma-1">
+          <v-col cols="4" />
+          <v-col class="ma-0 pa-0" cols="4">
+            <v-checkbox
+              v-model="isPreExcited"
+              color="pink"
+              hide-details
+              label="事前の興奮"
+            />
+          </v-col>
+          <v-col cols="4" />
+        </v-row>
+
+        <v-row class="ma-1">
+          <v-col cols="4">食事状態</v-col>
+          <v-col class="pt-1 pl-0 pb-0">
+            <v-radio-group v-model="mealCondition" color="pink" hide-details>
+              <v-radio label="食前" :value="1"></v-radio>
+              <v-radio label="食間" :value="2"></v-radio>
+              <v-radio label="食後" :value="3"></v-radio>
+            </v-radio-group>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card-text>
+
+    <v-card-actions class="d-flex justify-end pb-6 pr-4">
+      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="recordRikoni">OK</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>

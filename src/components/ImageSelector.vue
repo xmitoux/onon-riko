@@ -6,7 +6,6 @@
   import SnackbarError from '@/components/SncakbarError.vue';
   import TagFilter from '@/components/ImageTagFilter.vue';
 
-  const props = defineProps<{ open: boolean }>();
   const emit = defineEmits<{
     (e: 'close', selectedImage: Image | null): void;
   }>();
@@ -66,7 +65,6 @@
 
   const closeDialog = () => {
     emit('close', selectedImage.value);
-    selectedImage.value = null;
   };
 
   const tagFilterDrawer = ref(false);
@@ -111,72 +109,60 @@
 </script>
 
 <template>
-  <v-dialog
-    :model-value="props.open"
-    fullscreen
-    scrollable
-    transition="dialog-bottom-transition"
+  <SnackbarError
+    v-model="showSnackbar"
+    error-message="画像の取得に失敗しました。"
+    :error-detail="errorDetail"
+  />
+
+  <v-navigation-drawer
+    v-model="tagFilterDrawer"
+    location="right"
+    temporary
+    width="350"
   >
-    <SnackbarError
-      v-if="props.open"
-      v-model="showSnackbar"
-      error-message="画像の取得に失敗しました。"
-      :error-detail="errorDetail"
-    />
+    <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
+  </v-navigation-drawer>
 
-    <v-navigation-drawer
-      v-model="tagFilterDrawer"
-      location="right"
-      temporary
-      width="350"
-    >
-      <TagFilter @ok="selectImageTag" @cancel="tagFilterDrawer = false" />
-    </v-navigation-drawer>
+  <v-card class="text-center">
+    <v-toolbar color="white">
+      <v-toolbar-title class="pl-10">画像を選択する</v-toolbar-title>
 
-    <v-card class="text-center">
-      <v-toolbar color="white">
-        <v-toolbar-title class="pl-10">画像を選択する</v-toolbar-title>
-
-        <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
-      </v-toolbar>
-      <v-card-text class="pa-0">
-        <v-container>
-          <v-row>
-            <v-col
-              v-for="image in filteredImages"
-              :key="image.id"
-              class="pa-1"
-              cols="6"
+      <v-btn @click="tagFilterDrawer = !tagFilterDrawer" icon="mdi-filter" />
+    </v-toolbar>
+    <v-card-text class="pa-0">
+      <v-container>
+        <v-row>
+          <v-col
+            v-for="image in filteredImages"
+            :key="image.id"
+            class="pa-1"
+            cols="6"
+          >
+            <v-img
+              @click="(selectedImage = image), closeDialog()"
+              aspect-ratio="1"
+              cover
+              :src="`${IMAGES_BUCKET_URL}/${image.path}`"
             >
-              <v-img
-                @click="(selectedImage = image), closeDialog()"
-                aspect-ratio="1"
-                cover
-                :src="`${IMAGES_BUCKET_URL}/${image.path}`"
-              >
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular indeterminate color="grey-lighten-5" />
-                  </v-row>
-                </template>
-              </v-img>
-            </v-col>
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular indeterminate color="grey-lighten-5" />
+                </v-row>
+              </template>
+            </v-img>
+          </v-col>
 
-            <!-- 無限スクロール監視用要素 -->
-            <div ref="observingTarget"></div>
-          </v-row>
-        </v-container>
-      </v-card-text>
+          <!-- 無限スクロール監視用要素 -->
+          <div ref="observingTarget"></div>
+        </v-row>
+      </v-container>
+    </v-card-text>
 
-      <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-card-actions class="d-flex justify-end pb-6 pr-4">
+      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <style scoped></style>
