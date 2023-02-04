@@ -20,5 +20,13 @@
       </v-col>
     </v-row>
   </v-container>
-  <ImageUploader :open="imageUploader" @close="imageUploader = false" />
+
+  <v-dialog
+    v-model="imageUploader"
+    fullscreen
+    scrollable
+    transition="dialog-bottom-transition"
+  >
+    <ImageUploader @close="imageUploader = false" />
+  </v-dialog>
 </template>

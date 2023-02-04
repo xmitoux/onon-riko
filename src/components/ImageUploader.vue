@@ -1,12 +1,11 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
+  import type { ImageTag } from '@/types';
 
-  const props = defineProps<{ open: boolean }>();
   const emit = defineEmits(['close']);
 
   const closeDialog = () => {
-    deleteImage();
     emit('close');
   };
 
@@ -55,8 +54,6 @@
       .catch();
 
     // TODO: エラー処理 409: 重複画像
-    console.log(data);
-    console.log(error);
 
     if (!data) {
       return;
@@ -70,8 +67,6 @@
       .select('*');
 
     // TODO: エラー処理\
-    console.log(data2);
-    console.log(error2);
 
     closeDialog();
   };
@@ -83,10 +78,6 @@
 
   const fav = ref(false);
 
-  type ImageTag = {
-    id: number;
-    name: string;
-  };
   const imageTags = ref<ImageTag[]>([]);
   const getTags = async () => {
     const { data, error } = await supabase
@@ -95,8 +86,6 @@
       .order('display_order');
 
     // TODO: エラー処理
-    console.log(data);
-    console.log(error);
 
     if (!data) {
       return;
@@ -109,58 +98,51 @@
 </script>
 
 <template>
-  <v-dialog
-    :model-value="props.open"
-    fullscreen
-    scrollable
-    transition="dialog-bottom-transition"
-  >
-    <v-card class="text-center" title="画像を登録する">
-      <v-card-text class="pa-2">
-        <v-container class="pa-0">
-          <v-row class="ma-1" align="center" justify="space-between">
-            <v-col cols="4">登録画像</v-col>
+  <v-card class="text-center" title="画像を登録する">
+    <v-card-text class="pa-2">
+      <v-container class="pa-0">
+        <v-row class="ma-1" align="center" justify="space-between">
+          <v-col cols="4">登録画像</v-col>
 
-            <v-col>
-              <input
-                class="d-none"
-                accept="image/*"
-                ref="uploader"
-                type="file"
-                @change="onChangeImage"
-              />
-              <v-btn @click="selectImage">選択</v-btn>
-            </v-col>
+          <v-col>
+            <input
+              class="d-none"
+              accept="image/*"
+              ref="uploader"
+              type="file"
+              @change="onChangeImage"
+            />
+            <v-btn @click="selectImage">選択</v-btn>
+          </v-col>
 
-            <v-col>
-              <v-btn v-if="attachedImage" @click="deleteImage">削除</v-btn>
-            </v-col>
-          </v-row>
+          <v-col>
+            <v-btn v-if="attachedImage" @click="deleteImage">削除</v-btn>
+          </v-col>
+        </v-row>
 
-          <v-row class="ma-4">
-            <v-img v-if="attachedImage" :src="attachedImage" />
-          </v-row>
+        <v-row class="ma-4">
+          <v-img v-if="attachedImage" :src="attachedImage" />
+        </v-row>
 
-          <v-row>
-            <v-col cols="4">タグ選択</v-col>
-          </v-row>
+        <v-row>
+          <v-col cols="4">タグ選択</v-col>
+        </v-row>
 
-          <template v-for="imageTag in imageTags" :key="imageTag.id">
-            <v-checkbox hide-details :label="imageTag.name" />
-          </template>
+        <template v-for="imageTag in imageTags" :key="imageTag.id">
+          <v-checkbox hide-details :label="imageTag.name" />
+        </template>
 
-          <v-row class="ma-1" align="center" justify="space-between">
-            <v-col cols="4">お気に入り</v-col>
+        <v-row class="ma-1" align="center" justify="space-between">
+          <v-col cols="4">お気に入り</v-col>
 
-            <v-col><v-switch color="blue" inset v-model="fav" /></v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
+          <v-col><v-switch color="blue" inset v-model="fav" /></v-col>
+        </v-row>
+      </v-container>
+    </v-card-text>
 
-      <v-card-actions class="d-flex justify-end">
-        <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
-        <v-btn variant="outlined" @click="uploadImage">OK</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-card-actions class="d-flex justify-end">
+      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="uploadImage">OK</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
