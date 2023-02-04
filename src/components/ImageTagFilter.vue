@@ -68,11 +68,11 @@
 
 <style scoped>
   .tag-area {
-    height: 590px;
+    height: 540px;
     overflow: scroll;
   }
 
-  .tag-label >>> .v-label {
+  .tag-label :deep() .v-label {
     font-size: small;
   }
 </style>
