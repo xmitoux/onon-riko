@@ -7,10 +7,9 @@
   import TagFilter from '@/components/ImageTagFilter.vue';
 
   const emit = defineEmits<{
-    (e: 'close', selectedImage: Image | null): void;
+    (e: 'select', selectedImage: Image): void;
+    (e: 'close'): void;
   }>();
-
-  const selectedImage = ref<Image | null>(null);
 
   const showSnackbar = ref(false);
   const errorDetail = ref('');
@@ -67,8 +66,12 @@
     observer.value.observe(observingTarget.value as Element);
   });
 
+  const selectImage = (image: Image) => {
+    emit('select', image);
+  };
+
   const closeDialog = () => {
-    emit('close', selectedImage.value);
+    emit('close');
   };
 
   const tagFilterDrawer = ref(false);
@@ -147,7 +150,7 @@
                 cols="6"
               >
                 <v-img
-                  @click="(selectedImage = image), closeDialog()"
+                  @click="selectImage(image)"
                   aspect-ratio="1"
                   cover
                   :src="`${IMAGES_BUCKET_URL}/${image.path}`"

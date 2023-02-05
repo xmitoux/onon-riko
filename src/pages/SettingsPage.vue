@@ -1,7 +1,10 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import ImageUploader from '@/components/ImageUploader.vue';
+  import ImageEditor from '@/components/ImageEditor.vue';
+
   const imageUploader = ref(false);
+  const imageEditor = ref(false);
 </script>
 
 <template>
@@ -10,13 +13,15 @@
       <v-col cols="4">使用画像</v-col>
 
       <v-col>
-        <v-btn prepend-icon="mdi-image-plus" @click="imageUploader = true">
+        <v-btn @click="imageUploader = true" prepend-icon="mdi-image-plus">
           登録
         </v-btn>
       </v-col>
 
       <v-col>
-        <v-btn prepend-icon="mdi-pencil">編集</v-btn>
+        <v-btn @click="imageEditor = true" prepend-icon="mdi-pencil">
+          編集
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -28,5 +33,14 @@
     transition="dialog-bottom-transition"
   >
     <ImageUploader @close="imageUploader = false" />
+  </v-dialog>
+
+  <v-dialog
+    v-model="imageEditor"
+    fullscreen
+    scrollable
+    transition="dialog-bottom-transition"
+  >
+    <ImageEditor @close="imageEditor = false" />
   </v-dialog>
 </template>
