@@ -2,14 +2,10 @@
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
   import type { ImageTag } from '@/types';
-  import SnackbarError from '@/components/SncakbarError.vue';
   import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const emit = defineEmits(['close']);
-
-  const closeDialog = () => {
-    emit('close');
-  };
 
   const uploader = ref<HTMLInputElement>();
   const selectImage = () => {
@@ -18,6 +14,7 @@
 
   const uploadFile = ref<File | null>(null);
   const attachedImage = ref<string | null>(null);
+
   const onChangeImage = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const files = target.files;
@@ -101,6 +98,10 @@
   getTags();
 
   const selectedTags = ref<number[]>([]);
+
+  const closeDialog = () => {
+    emit('close');
+  };
 </script>
 
 <template>
@@ -111,49 +112,67 @@
   />
 
   <v-card class="text-center" title="画像を登録する">
-    <v-card-text class="pa-2">
+    <v-card-text class="pa-4">
       <v-container class="pa-0">
-        <v-row class="ma-1" align="center" justify="space-between">
+        <v-row align="center" class="mb-2">
           <v-col cols="4">登録画像</v-col>
 
           <v-col>
             <input
-              class="d-none"
               accept="image/*"
+              class="d-none"
               ref="uploader"
               type="file"
               @change="onChangeImage"
             />
-            <v-btn @click="selectImage">選択</v-btn>
+            <v-btn @click="selectImage" prepend-icon="mdi-image-album">
+              参照
+            </v-btn>
           </v-col>
 
           <v-col>
-            <v-btn v-if="attachedImage" @click="deleteImage">削除</v-btn>
+            <v-btn
+              v-if="attachedImage"
+              @click="deleteImage"
+              prepend-icon="mdi-delete"
+            >
+              削除
+            </v-btn>
           </v-col>
         </v-row>
 
-        <v-row class="ma-4">
-          <v-img v-if="attachedImage" :src="attachedImage" />
+        <v-row class="ma-0">
+          <v-img v-if="attachedImage" max-height="300" :src="attachedImage" />
         </v-row>
 
         <v-row>
           <v-col cols="4">タグ選択</v-col>
         </v-row>
 
-        <template v-for="imageTag in imageTags" :key="imageTag.id">
-          <v-checkbox
-            v-model="selectedTags"
-            hide-details
-            :label="imageTag.name"
-            :value="imageTag.id"
-          />
-        </template>
+        <v-row class="ma-0 pl-6">
+          <v-col v-for="tag in imageTags" :key="tag.id" class="pa-0" cols="6">
+            <v-checkbox
+              v-model="selectedTags"
+              class="tag-label"
+              color="pink"
+              hide-details
+              :label="tag.name"
+              :value="tag.id"
+            />
+          </v-col>
+        </v-row>
       </v-container>
     </v-card-text>
 
-    <v-card-actions class="d-flex justify-end">
+    <v-card-actions class="d-flex justify-end pb-6 pr-4">
       <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
       <v-btn variant="outlined" @click="uploadImage">OK</v-btn>
     </v-card-actions>
   </v-card>
 </template>
+
+<style scoped>
+  .tag-label :deep() .v-label {
+    font-size: small;
+  }
+</style>
