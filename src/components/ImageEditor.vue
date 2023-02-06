@@ -1,15 +1,16 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
-  import type { Image, ImageTag } from '@/types';
+  import type { ImageTag, ImageWithTag } from '@/types';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import ImageSelector from '@/components/ImageSelector.vue';
 
   const emit = defineEmits(['close']);
 
-  const selectedImage = ref<Image | null>(null);
-  const selectImage = (image: Image) => {
+  const selectedImage = ref<ImageWithTag | null>(null);
+  const selectImage = (image: ImageWithTag) => {
     selectedImage.value = image;
+    selectedTags.value = selectedImage.value.tag_ids;
     showImageEditor.value = true;
   };
 

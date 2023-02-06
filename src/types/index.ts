@@ -6,6 +6,8 @@ export type Image = {
   use_count: number;
 };
 
+export type ImageWithTag = Image & { tag_ids: number[] };
+
 export type Calendar = CalendarWeek[];
 export type CalendarWeek = CalendarDate[];
 export type CalendarDate = Dayjs | null;
