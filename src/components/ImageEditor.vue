@@ -11,10 +11,8 @@
   const selectImage = (image: ImageWithTag) => {
     selectedImage.value = image;
     selectedTags.value = selectedImage.value.tag_ids;
-    showImageEditor.value = true;
   };
 
-  const showImageEditor = ref(false);
   const imageTags = ref<ImageTag[]>([]);
   const getTags = async () => {
     const { data, error } = await supabase
@@ -33,8 +31,22 @@
 
   const selectedTags = ref<number[]>([]);
 
-  const closeEditor = () => {
-    showImageEditor.value = false;
+  const editTag = async () => {
+    const { error } = await supabase.rpc('update_image_tag_map', {
+      in_image_id: selectedImage.value!.id,
+      in_tag_ids: selectedTags.value,
+    });
+
+    if (error) {
+      // showSnackbarError('画像の登録(DB)に失敗しました。', error2.details);
+      return;
+    }
+
+    closeEditDialog();
+  };
+
+  const closeEditDialog = () => {
+    selectedImage.value = null;
   };
 
   const closeDialog = () => {
@@ -46,7 +58,7 @@
   <ImageSelector @close="closeDialog" @select="selectImage" />
 
   <v-dialog
-    v-model="showImageEditor"
+    :model-value="!!selectedImage"
     fullscreen
     scrollable
     transition="dialog-bottom-transition"
@@ -82,7 +94,8 @@
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeEditor">OK</v-btn>
+        <v-btn variant="outlined" @click="closeEditDialog">キャンセル</v-btn>
+        <v-btn variant="outlined" @click="editTag">OK</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
