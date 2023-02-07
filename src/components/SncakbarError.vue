@@ -21,7 +21,7 @@
   >
     <v-alert type="error">
       <p>{{ props.errorMessage }}</p>
-      <p>({{ props.errorDetail }})</p>
+      <p v-if="props.errorDetail">({{ props.errorDetail }})</p>
     </v-alert>
     <template v-slot:actions>
       <v-btn variant="text" @click="closeSnackbar">OK</v-btn>

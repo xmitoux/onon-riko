@@ -2,29 +2,28 @@
   import { computed, ref, watch } from 'vue';
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
-  import type { Image } from '@/types';
+  import type { ImageWithTag } from '@/types';
   import SnackbarError from '@/components/SncakbarError.vue';
   import TagFilter from '@/components/ImageTagFilter.vue';
 
   const emit = defineEmits<{
-    (e: 'close', selectedImage: Image | null): void;
+    (e: 'select', selectedImage: ImageWithTag): void;
+    (e: 'close'): void;
   }>();
-
-  const selectedImage = ref<Image | null>(null);
 
   const showSnackbar = ref(false);
   const errorDetail = ref('');
 
-  const images = ref<Image[]>([]);
+  const images = ref<ImageWithTag[]>([]);
 
   // 無限スクロール用に画像を10枚ずつ取得する
   const imageGetLimitLow = ref(0);
   const imageGetLimitHigh = ref(10);
   const imageGetLimitStep = ref(10);
 
-  const getImages = async () => {
+  const getImagesWithTag = async () => {
     const { data, error } = await supabase
-      .from('images')
+      .rpc('get_images_with_tags')
       .select('*')
       .range(imageGetLimitLow.value, imageGetLimitHigh.value)
       .order('id', { ascending: true });
@@ -35,13 +34,13 @@
       return;
     }
 
-    images.value = [...images.value, ...(data as Image[])];
+    images.value = [...images.value, ...(data as ImageWithTag[])];
     imageGetLimitLow.value = imageGetLimitHigh.value + 1;
     imageGetLimitHigh.value = imageGetLimitHigh.value + imageGetLimitStep.value;
 
     return;
   };
-  getImages();
+  getImagesWithTag();
 
   // 無限スクロール処理
   // (スクロール最下部に監視対象要素を置き、それが表示されたら画像の続きを取得する)
@@ -59,7 +58,7 @@
         if (images.value.length) {
           // 画面を開いた直後は無限スクロールによる画像取得はしない
           // (createdでのgetImages()と同時に実行され画像を重複して取得してしまうため)
-          getImages();
+          getImagesWithTag();
         }
       }
     });
@@ -67,8 +66,12 @@
     observer.value.observe(observingTarget.value as Element);
   });
 
+  const selectImage = (image: ImageWithTag) => {
+    emit('select', image);
+  };
+
   const closeDialog = () => {
-    emit('close', selectedImage.value);
+    emit('close');
   };
 
   const tagFilterDrawer = ref(false);
@@ -78,37 +81,19 @@
     tagFilterDrawer.value = false;
   };
 
-  type ImageTagMap = { image_id: number; tag_id: number };
-  const imageTagMap = ref<ImageTagMap[]>([]);
-  const getImageTagMap = async () => {
-    const { data, error } = await supabase.from('image_tag_map').select();
-
-    if (error) {
-      errorDetail.value = error.message;
-      showSnackbar.value = true;
-      return;
-    }
-
-    imageTagMap.value = data as ImageTagMap[];
-
-    return;
-  };
-  getImageTagMap();
-
   const filteredImages = computed(() => {
     if (!selectedTags.value.length) {
       return images.value;
     }
 
-    const filteredImageTagMap = imageTagMap.value
-      .filter((map) => selectedTags.value.includes(map.tag_id))
-      .map((map) => map.image_id);
-
-    const filteredImagesByTag = images.value.filter((image) =>
-      filteredImageTagMap.includes(image.id)
-    );
-
-    return filteredImagesByTag;
+    return images.value.filter((image) => {
+      for (let tag of image.tag_ids) {
+        if (selectedTags.value.includes(tag)) {
+          return true;
+        }
+      }
+      return false;
+    });
   });
 </script>
 
@@ -147,7 +132,7 @@
                 cols="6"
               >
                 <v-img
-                  @click="(selectedImage = image), closeDialog()"
+                  @click="selectImage(image)"
                   aspect-ratio="1"
                   cover
                   :src="`${IMAGES_BUCKET_URL}/${image.path}`"

@@ -4,8 +4,9 @@ export type Image = {
   id: number;
   path: string;
   use_count: number;
-  is_fav: boolean;
 };
+
+export type ImageWithTag = Image & { tag_ids: number[] };
 
 export type Calendar = CalendarWeek[];
 export type CalendarWeek = CalendarDate[];

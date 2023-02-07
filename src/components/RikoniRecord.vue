@@ -24,11 +24,12 @@
   const showImageSelector = ref(false);
   const selectedImage = ref<Image | null>(null);
 
-  const onCloseImageSelector = (image: Image | null) => {
-    if (image) {
-      selectedImage.value = image;
-    }
+  const selectImage = (image: Image) => {
+    selectedImage.value = image;
+    closeImageSelector();
+  };
 
+  const closeImageSelector = () => {
     showImageSelector.value = false;
   };
 
@@ -110,7 +111,7 @@
     scrollable
     transition="dialog-bottom-transition"
   >
-    <ImageSelector @close="onCloseImageSelector" />
+    <ImageSelector @close="closeImageSelector" @select="selectImage" />
   </v-dialog>
 
   <SnackbarError
@@ -148,14 +149,18 @@
           <v-col cols="4">使用画像</v-col>
           <v-col>
             <v-btn
-              prepend-icon="mdi-image-search"
               @click="showImageSelector = true"
+              prepend-icon="mdi-image-search"
             >
               選択
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn v-if="selectedImage" @click="selectedImage = null">
+            <v-btn
+              v-if="selectedImage"
+              @click="selectedImage = null"
+              prepend-icon="mdi-delete"
+            >
               削除
             </v-btn>
           </v-col>
