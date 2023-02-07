@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.4.0",
+    "browser-image-compression": "^2.0.0",
     "chart.js": "^4.2.0",
     "dayjs": "^1.11.7",
     "vite-plugin-vuetify": "^1.0.1",

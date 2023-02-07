@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import imageCompression from 'browser-image-compression';
   import { supabase } from '@/utils/supabase';
   import type { ImageTag } from '@/types';
   import { useSnackbarError } from '@/utils/use-snackbar-error';
@@ -14,29 +15,28 @@
 
   const uploadFile = ref<File | null>(null);
   const attachedImage = ref<string | null>(null);
+  const loadingImage = ref(false);
 
-  const onChangeImage = (e: Event) => {
+  const onChangeImage = async (e: Event) => {
+    deleteImage();
+    loadingImage.value = true;
+
     const target = e.target as HTMLInputElement;
-    const files = target.files;
-    if (!files?.length) {
-      return;
-    }
+    const imageFile = target.files![0];
 
-    const file = files[0];
-    uploadFile.value = file;
+    const compressedFile = await imageCompression(imageFile, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    });
 
-    const fileReader = new FileReader();
-    fileReader.onload = (fileEvent) => {
-      if (!fileEvent.target) {
-        return;
-      }
+    uploadFile.value = compressedFile;
+    imageCompression.getDataUrlFromFile(compressedFile).then((dataUrl) => {
+      loadingImage.value = false;
+      attachedImage.value = dataUrl;
+    });
 
-      attachedImage.value = fileEvent.target.result as string;
-
-      // 画像削除後に同じファイルを上げられるようにする
-      target.value = '';
-    };
-    fileReader.readAsDataURL(uploadFile.value);
+    target.value = '';
   };
 
   const { showSnackbar, errorMessage, errorDetail, showSnackbarError } =
@@ -138,6 +138,23 @@
             >
               削除
             </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row
+          v-if="loadingImage"
+          class="fill-height"
+          align-content="center"
+          justify="center"
+        >
+          <v-col class="text-subtitle-1 text-center" cols="12">読込中...</v-col>
+          <v-col cols="3">
+            <v-progress-linear
+              color="pink"
+              indeterminate
+              rounded
+              height="6"
+            ></v-progress-linear>
           </v-col>
         </v-row>
 
