@@ -3,9 +3,14 @@
   import { supabase } from '@/utils/supabase';
   import type { ImageTag, ImageWithTag } from '@/types';
   import { IMAGES_BUCKET_URL } from '@/consts';
+  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import SnackbarError from '@/components/SncakbarError.vue';
   import ImageSelector from '@/components/ImageSelector.vue';
 
   const emit = defineEmits(['close']);
+
+  const { showSnackbar, errorMessage, errorDetail, showSnackbarError } =
+    useSnackbarError();
 
   const selectedImage = ref<ImageWithTag | null>(null);
   const selectImage = (image: ImageWithTag) => {
@@ -21,7 +26,7 @@
       .order('id');
 
     if (error || !data) {
-      // showSnackbarError('タグの取得に失敗しました。', error.details);
+      showSnackbarError('タグの取得に失敗しました。', error.details);
       return;
     }
 
@@ -34,11 +39,11 @@
   const editTag = async () => {
     const { error } = await supabase.rpc('update_image_tag_map', {
       in_image_id: selectedImage.value!.id,
-      in_tag_ids: selectedTags.value,
+      in_tag_ids: 'selectedTags.value',
     });
 
     if (error) {
-      // showSnackbarError('画像の登録(DB)に失敗しました。', error2.details);
+      showSnackbarError('タグの更新に失敗しました。', error.details);
       return;
     }
 
@@ -55,6 +60,12 @@
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
+
   <ImageSelector @close="closeDialog" @select="selectImage" />
 
   <v-dialog
