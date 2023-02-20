@@ -39,7 +39,7 @@
   const editTag = async () => {
     const { error } = await supabase.rpc('update_image_tag_map', {
       in_image_id: selectedImage.value!.id,
-      in_tag_ids: 'selectedTags.value',
+      in_tag_ids: selectedTags.value,
     });
 
     if (error) {

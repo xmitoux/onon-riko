@@ -2,9 +2,11 @@
   import { ref } from 'vue';
   import ImageUploader from '@/components/ImageUploader.vue';
   import ImageEditor from '@/components/ImageEditor.vue';
+  import TagEditor from '@/components/TagEditor.vue';
 
   const imageUploader = ref(false);
   const imageEditor = ref(false);
+  const tagEditor = ref(false);
 </script>
 
 <template>
@@ -22,6 +24,14 @@
         <v-btn @click="imageEditor = true" prepend-icon="mdi-pencil">
           編集
         </v-btn>
+      </v-col>
+    </v-row>
+
+    <v-row class="ma-1" align="center" justify="space-between">
+      <v-col cols="4">画像タグ</v-col>
+
+      <v-col>
+        <v-btn @click="tagEditor = true" prepend-icon="mdi-pencil">編集</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -42,5 +52,14 @@
     transition="dialog-bottom-transition"
   >
     <ImageEditor @close="imageEditor = false" />
+  </v-dialog>
+
+  <v-dialog
+    v-model="tagEditor"
+    fullscreen
+    scrollable
+    transition="dialog-bottom-transition"
+  >
+    <TagEditor @close="tagEditor = false" />
   </v-dialog>
 </template>
