@@ -1,7 +1,7 @@
 import { supabase } from '@/utils/supabase';
 import type { ImageTag } from '@/types';
 
-export const geImagetTags = async () => {
+export const getImagetTags = async () => {
   const { data, error } = await supabase
     .from('image_tags')
     .select()
