@@ -25,7 +25,7 @@
     }
 
     localStorage.setItem('userId', data.session!.user.id);
-    router.push('/');
+    router.push({ name: 'home' });
   };
 </script>
 
