@@ -2,22 +2,35 @@
   import { ref } from 'vue';
   import draggable from 'vuedraggable';
   import { supabase } from '@/utils/supabase';
+  import { useSnackbarError } from '@/utils/use-snackbar-error';
   import { getImagetTags } from '@/service/getImageTags';
   import type { ImageTag } from '@/types';
+  import type { PostgrestError } from '@supabase/postgrest-js';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const emit = defineEmits(['close']);
+
+  const { showSnackbar, errorMessage, errorDetail, showSnackbarError } =
+    useSnackbarError();
 
   const imageTags = ref<ImageTag[]>([]);
 
   getImagetTags()
     .then((data) => (imageTags.value = data))
-    .catch((e) => console.log(e));
+    .catch((e: PostgrestError) =>
+      showSnackbarError('タグの取得に失敗しました。', e.details)
+    );
 
   const removeAt = (index: number) => {
     imageTags.value.splice(index, 1);
   };
 
   const updateImageTags = async () => {
+    if (imageTags.value.some((tag) => !tag.name.trim())) {
+      showSnackbarError('タグ名は必須です。');
+      return;
+    }
+
     const { error } = await supabase.rpc('update_image_tags', {
       in_image_tags_json: imageTags.value.map((data, index) => ({
         ...data,
@@ -26,8 +39,7 @@
     });
 
     if (error) {
-      // showSnackbarError('タグの取得に失敗しました。', error.details);
-      console.log(error);
+      showSnackbarError('タグの更新に失敗しました。', error.details);
       return;
     }
 
@@ -49,6 +61,12 @@
 </script>
 
 <template>
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
+
   <v-card class="text-center">
     <v-card-item class="relative">
       <v-card-title>
