@@ -104,13 +104,11 @@
         </v-row>
       </div>
 
-      <v-row>
-        <v-btn @click="addTag" icon="mdi-plus" />
-      </v-row>
+      <v-btn @click="addTag" class="mt-5">+</v-btn>
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
-      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="closeDialog">戻る</v-btn>
       <v-btn variant="outlined" @click="updateImageTags">OK</v-btn>
     </v-card-actions>
   </v-card>
