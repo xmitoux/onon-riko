@@ -25,17 +25,24 @@
 </script>
 
 <template>
-  <v-row>
-    <v-text-field v-model="email" />
-  </v-row>
+  <v-container class="">
+    <v-row class="ma-2">
+      <v-text-field v-model="email" label="E-mail" variant="outlined" />
+    </v-row>
 
-  <v-row>
-    <v-text-field v-model="password" type="password" />
-  </v-row>
+    <v-row class="ma-2">
+      <v-text-field
+        v-model="password"
+        label="Password"
+        type="password"
+        variant="outlined"
+      />
+    </v-row>
 
-  <v-row>
-    <v-btn @click="login">ログイン</v-btn>
-  </v-row>
+    <v-row justify="space-around">
+      <v-btn @click="login">ログイン</v-btn>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped></style>
