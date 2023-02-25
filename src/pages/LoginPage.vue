@@ -2,8 +2,13 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { supabase } from '@/utils/supabase';
+  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const router = useRouter();
+
+  const { showSnackbar, errorMessage, errorDetail, showSnackbarError } =
+    useSnackbarError();
 
   const email = ref('');
   const password = ref('');
@@ -15,7 +20,7 @@
     });
 
     if (error) {
-      console.log(error);
+      showSnackbarError('認証に失敗しました。', error.message);
       return;
     }
 
@@ -25,7 +30,13 @@
 </script>
 
 <template>
-  <v-container class="">
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
+
+  <v-container>
     <v-row class="ma-2">
       <v-text-field v-model="email" label="E-mail" variant="outlined" />
     </v-row>
