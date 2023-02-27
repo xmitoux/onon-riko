@@ -4,7 +4,7 @@
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image, RikoniRecord } from '@/types';
-  import ImageSelector from '@/components/ImageSelector.vue';
+  import ImageSelector from '@/components/image-selector/ImageSelector.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{
@@ -285,7 +285,7 @@
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
-      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="closeDialog">戻る</v-btn>
       <v-btn variant="outlined" @click="recordRikoni">OK</v-btn>
     </v-card-actions>
   </v-card>

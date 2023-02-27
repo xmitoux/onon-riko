@@ -60,7 +60,7 @@
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
       <v-btn variant="outlined" @click="onReset">リセット</v-btn>
-      <v-btn variant="outlined" @click="onCancel">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="onCancel">戻る</v-btn>
       <v-btn variant="outlined" @click="onOk">OK</v-btn>
     </v-card-actions>
   </v-card>

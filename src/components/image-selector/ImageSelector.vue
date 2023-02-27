@@ -4,7 +4,7 @@
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { ImageWithTag } from '@/types';
   import SnackbarError from '@/components/SncakbarError.vue';
-  import TagFilter from '@/components/ImageTagFilter.vue';
+  import TagFilter from '@/components/image-selector/ImageTagFilter.vue';
 
   const emit = defineEmits<{
     (e: 'select', selectedImage: ImageWithTag): void;
@@ -160,7 +160,7 @@
     </v-layout>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
-      <v-btn variant="outlined" @click="closeDialog">キャンセル</v-btn>
+      <v-btn variant="outlined" @click="closeDialog">戻る</v-btn>
     </v-card-actions>
   </v-card>
 </template>

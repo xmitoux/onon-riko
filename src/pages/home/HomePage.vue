@@ -2,7 +2,7 @@
   import { onMounted, onUnmounted, ref } from 'vue';
   import dayjs from 'dayjs';
   import { lockScroll, unlockScroll } from '@/utils/utils';
-  import RikoniRecord from '@/components/RikoniRecord.vue';
+  import RikoniRecord from '@/pages/home/RikoniRecord.vue';
 
   onMounted(() => lockScroll());
   onUnmounted(() => unlockScroll());

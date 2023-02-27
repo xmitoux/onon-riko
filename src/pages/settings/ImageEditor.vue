@@ -5,7 +5,7 @@
   import { IMAGES_BUCKET_URL } from '@/consts';
   import { useSnackbarError } from '@/utils/use-snackbar-error';
   import SnackbarError from '@/components/SncakbarError.vue';
-  import ImageSelector from '@/components/ImageSelector.vue';
+  import ImageSelector from '@/components/image-selector/ImageSelector.vue';
 
   const emit = defineEmits(['close']);
 
@@ -23,7 +23,7 @@
     const { data, error } = await supabase
       .from('image_tags')
       .select()
-      .order('id');
+      .order('display_order');
 
     if (error || !data) {
       showSnackbarError('タグの取得に失敗しました。', error.details);
@@ -105,7 +105,7 @@
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeEditDialog">キャンセル</v-btn>
+        <v-btn variant="outlined" @click="closeEditDialog">戻る</v-btn>
         <v-btn variant="outlined" @click="editTag">OK</v-btn>
       </v-card-actions>
     </v-card>

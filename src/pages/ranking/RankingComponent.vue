@@ -5,7 +5,7 @@
   import type { Image } from '@/types';
   import { IMAGES_BUCKET_URL } from '@/consts';
 
-  import RankingDetail from '@/components/RankingDetail.vue';
+  import RankingDetail from '@/pages/ranking/RankingDetail.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   type RankedImage = Image & { rank: number };
