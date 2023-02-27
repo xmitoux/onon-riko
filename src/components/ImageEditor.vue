@@ -105,7 +105,7 @@
       </v-card-text>
 
       <v-card-actions class="d-flex justify-end pb-6 pr-4">
-        <v-btn variant="outlined" @click="closeEditDialog">キャンセル</v-btn>
+        <v-btn variant="outlined" @click="closeEditDialog">戻る</v-btn>
         <v-btn variant="outlined" @click="editTag">OK</v-btn>
       </v-card-actions>
     </v-card>
