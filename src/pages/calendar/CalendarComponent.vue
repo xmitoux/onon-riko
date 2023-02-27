@@ -3,7 +3,7 @@
   import dayjs, { Dayjs } from 'dayjs';
   import type { RikoniRecordWithImage } from '@/types';
   import { useCalendar } from '@/utils/useCalendar';
-  import CalendarDetail from '@/components/CalendarDetail.vue';
+  import CalendarDetail from '@/pages/calendar/CalendarDetail.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{

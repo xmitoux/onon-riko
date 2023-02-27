@@ -5,7 +5,7 @@
   import { IMAGES_BUCKET_URL } from '@/consts';
   import { useSnackbarError } from '@/utils/use-snackbar-error';
   import SnackbarError from '@/components/SncakbarError.vue';
-  import ImageSelector from '@/components/ImageSelector.vue';
+  import ImageSelector from '@/components/image-selector/ImageSelector.vue';
 
   const emit = defineEmits(['close']);
 

@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { authenticationGuard } from '@/router/auth-guard';
 
 import HomePage from '@/pages/home/HomePage.vue';
-const CalendarPage = () => import('@/pages/CalendarPage.vue');
-const RankingPage = () => import('@/pages/RankingPage.vue');
-const SettingsPage = () => import('@/pages/SettingsPage.vue');
+const CalendarPage = () => import('@/pages/calendar/CalendarPage.vue');
+const RankingPage = () => import('@/pages/ranking/RankingPage.vue');
+const SettingsPage = () => import('@/pages/settings/SettingsPage.vue');
 const LoginPage = () => import('@/pages/LoginPage.vue');
 
 const router = createRouter({

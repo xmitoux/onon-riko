@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { ref } from 'vue';
-  import ImageUploader from '@/components/ImageUploader.vue';
-  import ImageEditor from '@/components/ImageEditor.vue';
-  import TagEditor from '@/components/TagEditor.vue';
+  import ImageUploader from '@/pages/settings/ImageUploader.vue';
+  import ImageEditor from '@/pages/settings/ImageEditor.vue';
+  import TagEditor from '@/pages/settings/TagEditor.vue';
 
   const imageUploader = ref(false);
   const imageEditor = ref(false);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import RankingComponent from '@/components/RankingComponent.vue';
+  import RankingComponent from '@/pages/ranking/RankingComponent.vue';
 </script>
 
 <template>

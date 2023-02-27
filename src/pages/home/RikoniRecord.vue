@@ -4,7 +4,7 @@
   import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image, RikoniRecord } from '@/types';
-  import ImageSelector from '@/components/ImageSelector.vue';
+  import ImageSelector from '@/components/image-selector/ImageSelector.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{

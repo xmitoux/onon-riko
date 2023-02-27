@@ -6,7 +6,7 @@
   import { useRankingDetails } from '@/utils/useRankingDetail';
   import { getMaxMapValue } from '@/utils/utils';
 
-  import ChartBar from '@/components/ChartBar.vue';
+  import ChartBar from '@/pages/ranking/ChartBar.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const props = defineProps<{

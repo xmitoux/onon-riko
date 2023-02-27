@@ -4,7 +4,7 @@
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { ImageWithTag } from '@/types';
   import SnackbarError from '@/components/SncakbarError.vue';
-  import TagFilter from '@/components/ImageTagFilter.vue';
+  import TagFilter from '@/components/image-selector/ImageTagFilter.vue';
 
   const emit = defineEmits<{
     (e: 'select', selectedImage: ImageWithTag): void;
