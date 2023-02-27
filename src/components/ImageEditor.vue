@@ -23,7 +23,7 @@
     const { data, error } = await supabase
       .from('image_tags')
       .select()
-      .order('id');
+      .order('display_order');
 
     if (error || !data) {
       showSnackbarError('タグの取得に失敗しました。', error.details);
