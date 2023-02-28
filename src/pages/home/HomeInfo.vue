@@ -1,7 +1,8 @@
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   import dayjs from 'dayjs';
   import 'dayjs/locale/ja';
+  import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
 
   const props = defineProps<{
@@ -15,6 +16,21 @@
     const now = dayjs();
     return now.diff(lastDatetime.value, 'day');
   });
+
+  const countPerMonth = ref(0);
+
+  const getCountPerMonth = async () => {
+    const { data, error } = await supabase
+      .rpc('get_rikoni_count_per_month')
+      .single();
+
+    if (error) {
+      console.log(error);
+    }
+
+    countPerMonth.value = data.count;
+  };
+  getCountPerMonth();
 </script>
 
 <template>
@@ -34,7 +50,7 @@
 
       <v-col class="pt-0">
         <div class="text-caption my-1">月間実施/目標回数</div>
-        <div class="text-h6">11/10回</div>
+        <div class="text-h6">{{ countPerMonth }}/n回</div>
         <div class="my-1">🎉☔️😌</div>
       </v-col>
     </v-row>
