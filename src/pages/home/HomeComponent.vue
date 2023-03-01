@@ -27,6 +27,34 @@
   };
   getLatestRecord();
 
+  const countPerMonth = ref(0);
+
+  const getCountPerMonth = async () => {
+    const { data, error } = await supabase
+      .rpc('get_rikoni_count_per_month')
+      .single();
+
+    if (error) {
+      console.log(error);
+    }
+
+    countPerMonth.value = data.count;
+  };
+  getCountPerMonth();
+
+  const targetCount = ref(0);
+
+  const getTargetCount = async () => {
+    const { data, error } = await supabase.from('settings').select().single();
+
+    if (error) {
+      console.log(error);
+    }
+
+    targetCount.value = data.target_count_per_month;
+  };
+  getTargetCount();
+
   const showRecordDialog = ref(false);
 
   const startedAt = ref('');
@@ -66,6 +94,8 @@
   <HomeInfo
     :last-image-path="latestRecord?.images.path"
     :last-datetime="latestRecord?.finished_at"
+    :target-count="targetCount"
+    :count-per-month="countPerMonth"
   />
 
   <v-container>

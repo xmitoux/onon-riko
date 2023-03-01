@@ -1,13 +1,14 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue';
+  import { computed } from 'vue';
   import dayjs from 'dayjs';
   import 'dayjs/locale/ja';
-  import { supabase } from '@/utils/supabase';
   import { IMAGES_BUCKET_URL } from '@/consts';
 
   const props = defineProps<{
     lastDatetime?: string;
     lastImagePath?: string;
+    countPerMonth: number;
+    targetCount: number;
   }>();
 
   const lastDatetime = computed(() => dayjs(props.lastDatetime));
@@ -16,21 +17,6 @@
     const now = dayjs();
     return now.diff(lastDatetime.value, 'day');
   });
-
-  const countPerMonth = ref(0);
-
-  const getCountPerMonth = async () => {
-    const { data, error } = await supabase
-      .rpc('get_rikoni_count_per_month')
-      .single();
-
-    if (error) {
-      console.log(error);
-    }
-
-    countPerMonth.value = data.count;
-  };
-  getCountPerMonth();
 
   const evaluateCount = (targetCount: number, currentCount: number): string => {
     const percentage = currentCount / targetCount;
@@ -55,7 +41,9 @@
     }
   };
 
-  const evaluatedEmoji = computed(() => evaluateCount(10, countPerMonth.value));
+  const evaluatedEmoji = computed(() =>
+    evaluateCount(props.targetCount, props.countPerMonth)
+  );
 </script>
 
 <template>
@@ -63,20 +51,34 @@
     <v-row align="center" class="text-center" style="height: 125px">
       <v-col class="pt-0">
         <div class="text-caption my-1">前回実施日</div>
-        <div class="text-h6">
-          {{ lastDatetime.locale('ja').format('M/DD(dd)') }}
-        </div>
-        <v-sheet class="text-body-2 my-1" color="white" rounded="pill">
-          前回から{{ interval }}日経過
-        </v-sheet>
+
+        <template v-if="props.lastDatetime">
+          <div class="text-h6">
+            {{ lastDatetime.locale('ja').format('M/DD(dd)') }}
+          </div>
+          <v-sheet class="text-body-2 my-1" color="white" rounded="pill">
+            前回から{{ interval }}日経過
+          </v-sheet>
+        </template>
+
+        <template v-else>
+          <v-sheet color="#FFD6DE" height="60" />
+        </template>
       </v-col>
 
       <v-divider inset length="100" vertical />
 
       <v-col class="pt-0">
         <div class="text-caption my-1">月間実施/目標回数</div>
-        <div class="text-h6">{{ countPerMonth }}/n回</div>
-        <div class="my-1">{{ evaluatedEmoji }}</div>
+
+        <template v-if="targetCount">
+          <div class="text-h6">{{ countPerMonth }}/{{ targetCount }}回</div>
+          <div class="my-1">{{ evaluatedEmoji }}</div>
+        </template>
+
+        <template v-else>
+          <v-sheet color="#FFD6DE" height="64" />
+        </template>
       </v-col>
     </v-row>
 
