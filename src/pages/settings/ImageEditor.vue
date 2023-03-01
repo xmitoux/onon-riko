@@ -3,7 +3,7 @@
   import { supabase } from '@/utils/supabase';
   import type { ImageTag, ImageWithTag } from '@/types';
   import { IMAGES_BUCKET_URL } from '@/consts';
-  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import SnackbarError from '@/components/SncakbarError.vue';
   import ImageSelector from '@/components/image-selector/ImageSelector.vue';
 

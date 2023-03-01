@@ -1,9 +1,11 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
+  import { useSnackbarSuccess } from '@/utils/use-snackbar';
   import ImageUploader from '@/pages/settings/ImageUploader.vue';
   import ImageEditor from '@/pages/settings/ImageEditor.vue';
   import TagEditor from '@/pages/settings/TagEditor.vue';
+  import SncakbarSuccess from '@/components/SncakbarSuccess.vue';
 
   const imageUploader = ref(false);
   const imageEditor = ref(false);
@@ -22,6 +24,9 @@
   };
   getTargetCount();
 
+  const { snackbarSuccess, successMessage, showSnackbarSuccess } =
+    useSnackbarSuccess();
+
   const updateTargetCount = async () => {
     const { error } = await supabase
       .from('settings')
@@ -30,11 +35,16 @@
 
     if (error) {
       console.log(error);
+      return;
     }
+
+    showSnackbarSuccess('月間目標回数を更新しました。');
   };
 </script>
 
 <template>
+  <SncakbarSuccess v-model="snackbarSuccess" :message="successMessage" />
+
   <v-container>
     <v-row class="ma-1" align="center" justify="space-between">
       <v-col cols="4">使用画像</v-col>
