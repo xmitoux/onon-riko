@@ -2,6 +2,7 @@
   import { ref, watch } from 'vue';
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import { IMAGES_BUCKET_URL } from '@/consts';
   import type { Image, RikoniRecord } from '@/types';
   import ImageSelector from '@/components/image-selector/ImageSelector.vue';
@@ -11,7 +12,9 @@
     auto?: { startedAt: string; finishedAt: string };
   }>();
 
-  const emit = defineEmits(['update:modelValue', 'close']);
+  const emit = defineEmits<{
+    (e: 'close', result: boolean): void;
+  }>();
 
   // 自動入力が渡されたら日時欄にセットするためウォッチ
   watch(props, () => {
@@ -45,19 +48,21 @@
   const doneExercise = ref(false);
   const mealCondition = ref(1);
 
-  const errorDetail = ref('');
-  const showSnackbar = ref(false);
+  const {
+    showSnackbar: snackbarError,
+    showSnackbarError,
+    errorMessage,
+    errorDetail,
+  } = useSnackbarError();
 
   const recordRikoni = async () => {
     if (!startedAt.value || !finishedAt.value) {
-      errorDetail.value = '日時を入力してください。';
-      showSnackbar.value = true;
+      showSnackbarError('日時を入力してください。');
       return;
     }
 
     if (!selectedImage.value) {
-      errorDetail.value = '画像を登録してください。';
-      showSnackbar.value = true;
+      showSnackbarError('画像を登録してください。');
       return;
     }
 
@@ -83,7 +88,7 @@
     };
 
     if (await insertRikoniRecord(record)) {
-      closeDialog();
+      closeDialog(true);
     }
   };
 
@@ -91,16 +96,15 @@
     const { error } = await supabase.from('rikoni_records').insert(record);
 
     if (error) {
-      errorDetail.value = error.message;
-      showSnackbar.value = true;
+      showSnackbarError(error.message, error.details);
       return false;
     }
 
     return true;
   };
 
-  const closeDialog = () => {
-    emit('close');
+  const closeDialog = (result: boolean) => {
+    emit('close', result);
   };
 </script>
 
@@ -113,12 +117,6 @@
   >
     <ImageSelector @close="closeImageSelector" @select="selectImage" />
   </v-dialog>
-
-  <SnackbarError
-    v-model="showSnackbar"
-    error-message="登録に失敗しました。"
-    :error-detail="errorDetail"
-  />
 
   <v-card class="text-center" title="記録する">
     <v-card-text class="pa-0">
@@ -285,8 +283,14 @@
     </v-card-text>
 
     <v-card-actions class="d-flex justify-end pb-6 pr-4">
-      <v-btn variant="outlined" @click="closeDialog">戻る</v-btn>
+      <v-btn variant="outlined" @click="closeDialog(false)">戻る</v-btn>
       <v-btn variant="outlined" @click="recordRikoni">OK</v-btn>
     </v-card-actions>
   </v-card>
+
+  <SnackbarError
+    v-model="snackbarError"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
 </template>

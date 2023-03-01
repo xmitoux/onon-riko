@@ -3,10 +3,11 @@
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { lockScroll, unlockScroll } from '@/utils/utils';
-  import { useSnackbarError } from '@/utils/use-snackbar';
+  import { useSnackbarSuccess, useSnackbarError } from '@/utils/use-snackbar';
   import type { RikoniRecordWithImage } from '@/types';
   import HomeInfo from './HomeInfo.vue';
   import RikoniRecord from '@/pages/home/RikoniRecord.vue';
+  import SncakbarSuccess from '@/components/SncakbarSuccess.vue';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   onMounted(() => lockScroll());
@@ -88,10 +89,17 @@
     unlockScroll();
   };
 
-  const onCloseDialog = () => {
+  const { snackbarSuccess, successMessage, showSnackbarSuccess } =
+    useSnackbarSuccess();
+
+  const onCloseDialog = (result: boolean) => {
     showRecordDialog.value = false;
     clearTime();
     lockScroll();
+
+    if (result) {
+      showSnackbarSuccess('登録しました。');
+    }
   };
 </script>
 
@@ -143,6 +151,8 @@
   >
     <RikoniRecord :auto="{ startedAt, finishedAt }" @close="onCloseDialog" />
   </v-dialog>
+
+  <SncakbarSuccess v-model="snackbarSuccess" :message="successMessage" />
 
   <SnackbarError
     v-model="showSnackbar"
