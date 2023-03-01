@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { supabase } from '@/utils/supabase';
-  import { useSnackbarSuccess } from '@/utils/use-snackbar';
+  import { useSnackbarSuccess, useSnackbarError } from '@/utils/use-snackbar';
   import ImageUploader from '@/pages/settings/ImageUploader.vue';
   import ImageEditor from '@/pages/settings/ImageEditor.vue';
   import TagEditor from '@/pages/settings/TagEditor.vue';
   import SncakbarSuccess from '@/components/SncakbarSuccess.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   const imageUploader = ref(false);
   const imageEditor = ref(false);
@@ -13,11 +14,18 @@
 
   const targetCount = ref(0);
 
+  const {
+    showSnackbar: snackbarError,
+    showSnackbarError,
+    errorMessage,
+    errorDetail,
+  } = useSnackbarError();
+
   const getTargetCount = async () => {
     const { data, error } = await supabase.from('settings').select().single();
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     targetCount.value = data.target_count_per_month;
@@ -34,7 +42,7 @@
       .eq('id', 1);
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
       return;
     }
 
@@ -43,8 +51,6 @@
 </script>
 
 <template>
-  <SncakbarSuccess v-model="snackbarSuccess" :message="successMessage" />
-
   <v-container>
     <v-row class="ma-1" align="center" justify="space-between">
       <v-col cols="4">使用画像</v-col>
@@ -109,4 +115,12 @@
   >
     <TagEditor @close="tagEditor = false" />
   </v-dialog>
+
+  <SncakbarSuccess v-model="snackbarSuccess" :message="successMessage" />
+
+  <SnackbarError
+    v-model="snackbarError"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
 </template>

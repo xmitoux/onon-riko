@@ -14,18 +14,16 @@
 
 <template>
   <v-snackbar
-    :model-value="props.modelValue"
+    @click="closeSnackbar"
     color="error"
     location="top"
+    :model-value="props.modelValue"
     :timeout="-1"
   >
     <v-alert type="error">
       <p>{{ props.errorMessage }}</p>
       <p v-if="props.errorDetail">({{ props.errorDetail }})</p>
     </v-alert>
-    <template v-slot:actions>
-      <v-btn variant="text" @click="closeSnackbar">OK</v-btn>
-    </template>
   </v-snackbar>
 </template>
 

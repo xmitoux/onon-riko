@@ -3,12 +3,17 @@
   import dayjs from 'dayjs';
   import { supabase } from '@/utils/supabase';
   import { lockScroll, unlockScroll } from '@/utils/utils';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import type { RikoniRecordWithImage } from '@/types';
   import HomeInfo from './HomeInfo.vue';
   import RikoniRecord from '@/pages/home/RikoniRecord.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
 
   onMounted(() => lockScroll());
   onUnmounted(() => unlockScroll());
+
+  const { showSnackbar, showSnackbarError, errorMessage, errorDetail } =
+    useSnackbarError();
 
   const latestRecord = ref<RikoniRecordWithImage | null>(null);
   const getLatestRecord = async () => {
@@ -20,7 +25,7 @@
       .single();
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     latestRecord.value = data as RikoniRecordWithImage;
@@ -35,7 +40,7 @@
       .single();
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     countPerMonth.value = data.count;
@@ -48,7 +53,7 @@
     const { data, error } = await supabase.from('settings').select().single();
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     targetCount.value = data.target_count_per_month;
@@ -138,4 +143,10 @@
   >
     <RikoniRecord :auto="{ startedAt, finishedAt }" @close="onCloseDialog" />
   </v-dialog>
+
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
 </template>
