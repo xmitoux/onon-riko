@@ -54,7 +54,7 @@
 
         <template v-if="props.lastDatetime">
           <div class="text-h6">
-            {{ lastDatetime.locale('ja').format('M/DD(dd)') }}
+            {{ lastDatetime.locale('ja').format('M/D(dd)') }}
           </div>
           <v-sheet class="text-body-2 my-1" color="white" rounded="pill">
             前回から{{ interval }}日経過
