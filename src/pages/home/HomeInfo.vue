@@ -31,6 +31,31 @@
     countPerMonth.value = data.count;
   };
   getCountPerMonth();
+
+  const evaluateCount = (targetCount: number, currentCount: number): string => {
+    const percentage = currentCount / targetCount;
+
+    // 評価結果を表す絵文字のリスト
+    const goodEmojis = ['🥰', '☀', '🎉'];
+    const averageEmojis = ['😐', '☁️', '👊'];
+    const badEmojis = ['☹️', '☔️', '🐤'];
+
+    const random = Math.floor(Math.random() * 3);
+
+    // 割合に応じて評価を行う
+    if (percentage >= 0.8) {
+      // 目標回数の80%以上達成
+      return goodEmojis[random];
+    } else if (percentage >= 0.4) {
+      // 目標回数の40%以上達成
+      return averageEmojis[random];
+    } else {
+      // 目標回数の40%未満
+      return badEmojis[random];
+    }
+  };
+
+  const evaluatedEmoji = computed(() => evaluateCount(10, countPerMonth.value));
 </script>
 
 <template>
@@ -51,7 +76,7 @@
       <v-col class="pt-0">
         <div class="text-caption my-1">月間実施/目標回数</div>
         <div class="text-h6">{{ countPerMonth }}/n回</div>
-        <div class="my-1">🎉☔️😌</div>
+        <div class="my-1">{{ evaluatedEmoji }}</div>
       </v-col>
     </v-row>
 
