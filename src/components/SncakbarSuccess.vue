@@ -1,8 +1,7 @@
 <script setup lang="ts">
   const props = defineProps<{
     modelValue: boolean;
-    errorMessage: string;
-    errorDetail: string;
+    message: string;
   }>();
 
   const emits = defineEmits(['update:modelValue']);
@@ -15,16 +14,13 @@
 <template>
   <v-snackbar
     @click="closeSnackbar"
-    color="error"
+    color="success"
     location="top"
     :model-value="props.modelValue"
     :timeout="-1"
   >
-    <v-alert type="error">
-      <p>{{ props.errorMessage }}</p>
-      <p v-if="props.errorDetail">({{ props.errorDetail }})</p>
+    <v-alert class="px-0" type="success">
+      <p>{{ props.message }}</p>
     </v-alert>
   </v-snackbar>
 </template>
-
-<style scoped></style>

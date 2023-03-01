@@ -3,7 +3,7 @@
   import imageCompression from 'browser-image-compression';
   import { supabase } from '@/utils/supabase';
   import type { ImageTag } from '@/types';
-  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const emit = defineEmits(['close']);

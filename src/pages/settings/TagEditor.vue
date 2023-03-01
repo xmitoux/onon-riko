@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import draggable from 'vuedraggable';
   import { supabase } from '@/utils/supabase';
-  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import { getImagetTags } from '@/service/getImageTags';
   import type { ImageTag } from '@/types';
   import type { PostgrestError } from '@supabase/postgrest-js';

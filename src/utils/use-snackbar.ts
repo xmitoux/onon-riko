@@ -18,3 +18,19 @@ export const useSnackbarError = () => {
     showSnackbarError,
   };
 };
+
+export const useSnackbarSuccess = () => {
+  const snackbarSuccess = ref(false);
+  const successMessage = ref('');
+
+  const showSnackbarSuccess = (messageString: string) => {
+    successMessage.value = messageString;
+    snackbarSuccess.value = true;
+  };
+
+  return {
+    snackbarSuccess,
+    successMessage,
+    showSnackbarSuccess,
+  };
+};

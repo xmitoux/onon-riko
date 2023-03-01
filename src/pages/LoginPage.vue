@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { supabase } from '@/utils/supabase';
-  import { useSnackbarError } from '@/utils/use-snackbar-error';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import SnackbarError from '@/components/SncakbarError.vue';
 
   const router = useRouter();
