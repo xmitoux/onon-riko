@@ -99,6 +99,8 @@
 
     if (result) {
       showSnackbarSuccess('登録しました。');
+      getLatestRecord();
+      getCountPerMonth();
     }
   };
 </script>
