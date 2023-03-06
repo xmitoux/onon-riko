@@ -90,7 +90,7 @@
         <v-img
           v-if="props.lastImagePath"
           class="mx-auto"
-          max-height="250"
+          max-height="180"
           max-width="250"
           :src="`${IMAGES_BUCKET_URL}/${props.lastImagePath}`"
         />
