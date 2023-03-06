@@ -145,7 +145,7 @@
 
         <v-row align="center" class="ma-1">
           <v-col cols="4">使用画像</v-col>
-          <v-col>
+          <v-col class="pl-0">
             <v-btn
               @click="showImageSelector = true"
               prepend-icon="mdi-image-search"
@@ -185,99 +185,6 @@
             half-increments
             size="35"
           />
-        </v-row>
-
-        <v-row class="ma-1">
-          <v-col cols="4">量</v-col>
-          <v-col class="pt-1 pl-0 pb-0">
-            <v-radio-group v-model="amount" color="pink" hide-details>
-              <v-radio label="多い" :value="5"></v-radio>
-              <v-radio label="ちょっと多い" :value="4"></v-radio>
-              <v-radio label="普通" :value="3"></v-radio>
-              <v-radio label="ちょっと少ない" :value="2"></v-radio>
-              <v-radio label="少ない" :value="1"></v-radio>
-            </v-radio-group>
-          </v-col>
-        </v-row>
-
-        <v-row class="ma-1">
-          <v-col cols="4">体位</v-col>
-
-          <v-col class="pt-1 pl-0 pb-0">
-            <v-radio-group v-model="bodyPosition" color="pink" hide-details>
-              <v-radio label="座位" :value="1"></v-radio>
-              <v-radio label="伏位" :value="2"></v-radio>
-              <v-radio label="立位" :value="3"></v-radio>
-            </v-radio-group>
-          </v-col>
-        </v-row>
-
-        <v-row align="center" class="ma-1">
-          <v-col cols="4">体調</v-col>
-
-          <v-col class="ma-0 pa-0" cols="4">
-            <v-checkbox
-              v-model="isDrunk"
-              color="pink"
-              hide-details
-              label="飲酒"
-            />
-          </v-col>
-
-          <v-col class="ma-0 pa-0" cols="4">
-            <v-checkbox
-              v-model="isSleepy"
-              color="pink"
-              hide-details
-              label="眠気"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row class="ma-1">
-          <v-col cols="4" />
-
-          <v-col class="ma-0 pa-0" cols="4">
-            <v-checkbox
-              v-model="doneWork"
-              color="pink"
-              hide-details
-              label="運動"
-            />
-          </v-col>
-
-          <v-col class="ma-0 pa-0" cols="4">
-            <v-checkbox
-              v-model="doneExercise"
-              color="pink"
-              hide-details
-              label="労働"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row class="ma-1">
-          <v-col cols="4" />
-          <v-col class="ma-0 pa-0" cols="4">
-            <v-checkbox
-              v-model="isPreExcited"
-              color="pink"
-              hide-details
-              label="事前の興奮"
-            />
-          </v-col>
-          <v-col cols="4" />
-        </v-row>
-
-        <v-row class="ma-1">
-          <v-col cols="4">食事状態</v-col>
-          <v-col class="pt-1 pl-0 pb-0">
-            <v-radio-group v-model="mealCondition" color="pink" hide-details>
-              <v-radio label="食前" :value="1"></v-radio>
-              <v-radio label="食間" :value="2"></v-radio>
-              <v-radio label="食後" :value="3"></v-radio>
-            </v-radio-group>
-          </v-col>
         </v-row>
       </v-container>
     </v-card-text>
