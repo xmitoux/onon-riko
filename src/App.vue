@@ -27,9 +27,9 @@
         <v-icon icon="mdi-crown" />
       </v-btn>
 
-      <!-- <v-btn @click="appBarTitle = '統計'">
+      <v-btn @click="appBarTitle = '統計'" to="statistics">
         <v-icon icon="mdi-chart-bar" />
-      </v-btn> -->
+      </v-btn>
 
       <v-btn @click="appBarTitle = '設定'" to="/settings">
         <v-icon icon="mdi-cog" />
