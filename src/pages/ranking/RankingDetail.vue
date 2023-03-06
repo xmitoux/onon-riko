@@ -19,14 +19,14 @@
 
   type RikoniTotal = {
     total_count: number;
-    avg_do_time: number;
+    total_do_time: number;
     avg_rating: number;
     avg_amount: number;
   };
 
   // 総回数と平均値を取得する
   const rikoniTotalCount = ref(0);
-  const rikoniAvgDoTime = ref(0);
+  const rikoniTotalDoTime = ref(0);
   const rikoniAvgRating = ref(0);
 
   const { showSnackbar, showSnackbarError, errorMessage, errorDetail } =
@@ -50,7 +50,7 @@
 
     const d = (data as RikoniTotal[])[0];
     rikoniTotalCount.value = d.total_count;
-    rikoniAvgDoTime.value = d.avg_do_time;
+    rikoniTotalDoTime.value = d.total_do_time;
     rikoniAvgRating.value = d.avg_rating;
   };
   getRikoniTotal(props.imageId);
@@ -162,7 +162,7 @@
             <div class="text-caption">総実施時間</div>
 
             <template v-if="true">
-              <div class="text-h6">{{ rikoniAvgDoTime }}分</div>
+              <div class="text-h6">{{ rikoniTotalDoTime }}分</div>
             </template>
 
             <template v-else>
