@@ -11,7 +11,10 @@
   const imageTags = ref<ImageTag[]>([]);
 
   const getImageTags = async () => {
-    const { data, error } = await supabase.from('image_tags').select();
+    const { data, error } = await supabase
+      .from('image_tags')
+      .select()
+      .order('display_order');
     if (error) {
       return;
     }
