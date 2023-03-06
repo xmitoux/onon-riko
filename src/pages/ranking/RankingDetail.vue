@@ -4,6 +4,7 @@
 
   import { supabase } from '@/utils/supabase';
   import { useRankingDetails } from '@/utils/useRankingDetail';
+  import { useSnackbarError } from '@/utils/use-snackbar';
   import { getMaxMapValue } from '@/utils/utils';
 
   import ChartBar from '@/components/ChartBar.vue';
@@ -27,16 +28,18 @@
   const rikoniTotalCount = ref(0);
   const rikoniAvgDoTime = ref(0);
   const rikoniAvgRating = ref(0);
-  const showSnackbar = ref(false);
-  const errorDetail = ref('');
+
+  const { showSnackbar, showSnackbarError, errorMessage, errorDetail } =
+    useSnackbarError();
+
   const getRikoniTotal = async (in_image_id: number) => {
     const { data, error } = await supabase.rpc('get_rikoni_total', {
       in_image_id,
     });
 
     if (error) {
-      errorDetail.value = error.message;
-      showSnackbar.value = true;
+      showSnackbarError('総使用回数取得に失敗しました。', error.message);
+
       return;
     }
 
@@ -76,8 +79,7 @@
     });
 
     if (error) {
-      errorDetail.value = error.message;
-      showSnackbar.value = true;
+      showSnackbarError('年別データ取得に失敗しました。', error.message);
       return;
     }
 
@@ -110,8 +112,7 @@
     });
 
     if (error) {
-      errorDetail.value = error.message;
-      showSnackbar.value = true;
+      showSnackbarError('月別データ取得に失敗しました。', error.message);
       return;
     }
 
@@ -136,12 +137,6 @@
 </script>
 
 <template>
-  <SnackbarError
-    v-model="showSnackbar"
-    error-message="統計データ取得に失敗しました。"
-    :error-detail="errorDetail"
-  />
-
   <v-card class="text-center" title="画像詳細">
     <v-card-text class="pa-0">
       <v-container class="pa-0 ma-0 mt-2">
@@ -209,6 +204,12 @@
       <v-btn variant="outlined" @click="emit('close')">OK</v-btn>
     </v-card-actions>
   </v-card>
+
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
 </template>
 
 <style scoped>

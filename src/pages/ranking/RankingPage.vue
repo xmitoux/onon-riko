@@ -3,9 +3,7 @@
 </script>
 
 <template>
-  <div>
-    <RankingComponent />
-  </div>
+  <RankingComponent />
 </template>
 
 <style scoped></style>
