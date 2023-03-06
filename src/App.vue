@@ -7,7 +7,9 @@
 <template>
   <v-app>
     <v-app-bar class="text-center" :elevation="1">
-      <v-app-bar-title>{{ appBarTitle }}</v-app-bar-title>
+      <v-app-bar-title class="app-title">
+        {{ appBarTitle }}
+      </v-app-bar-title>
     </v-app-bar>
 
     <v-main>
@@ -38,4 +40,11 @@
   </v-app>
 </template>
 
-<style scoped></style>
+<style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap');
+
+  .app-title {
+    font-family: 'Balsamiq Sans', cursive;
+    font-size: x-large;
+  }
+</style>
