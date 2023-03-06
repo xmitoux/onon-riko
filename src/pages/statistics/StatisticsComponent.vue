@@ -22,7 +22,7 @@
       .single();
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('総実施回数・時間取得に失敗しました。', error.message);
     }
 
     const result = data as StatisticsTotal;
@@ -54,7 +54,7 @@
     const { data, error } = await supabase.rpc('get_statistics_count_per_year');
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('年別データ取得に失敗しました。', error.message);
     }
 
     extract5YearsDatasets(data as RikoniPerYear[]);
@@ -85,7 +85,8 @@
     );
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('月別データ取得に失敗しました。', error.message);
+
       return;
     }
 

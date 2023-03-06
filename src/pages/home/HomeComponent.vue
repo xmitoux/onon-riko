@@ -26,7 +26,7 @@
       .single();
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('前回実施データ取得に失敗しました。', error.message);
     }
 
     latestRecord.value = data as RikoniRecordWithImage;
@@ -41,7 +41,7 @@
       .single();
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('月間実施回数取得に失敗しました。', error.message);
     }
 
     countPerMonth.value = data.count;
@@ -54,7 +54,7 @@
     const { data, error } = await supabase.from('settings').select().single();
 
     if (error) {
-      showSnackbarError(error.message, errorDetail.value);
+      showSnackbarError('目標回数取得に失敗しました。', error.message);
     }
 
     targetCount.value = data.target_count_per_month;
