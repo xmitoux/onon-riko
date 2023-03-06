@@ -6,6 +6,8 @@
   import { useRankingDetails } from '@/utils/useRankingDetail';
   import StatisticsInfo from '@/pages/statistics/StatisticsInfo.vue';
   import ChartBar from '@/components/ChartBar.vue';
+  import SnackbarError from '@/components/SncakbarError.vue';
+  import { useSnackbarError } from '@/utils/use-snackbar';
 
   type StatisticsTotal = { count_total: number; do_time_total: number };
 
@@ -20,7 +22,7 @@
       .single();
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     const result = data as StatisticsTotal;
@@ -52,7 +54,7 @@
     const { data, error } = await supabase.rpc('get_statistics_count_per_year');
 
     if (error) {
-      console.log(error);
+      showSnackbarError(error.message, errorDetail.value);
     }
 
     extract5YearsDatasets(data as RikoniPerYear[]);
@@ -83,8 +85,7 @@
     );
 
     if (error) {
-      // errorDetail.value = error.message;
-      // showSnackbar.value = true;
+      showSnackbarError(error.message, errorDetail.value);
       return;
     }
 
@@ -106,6 +107,9 @@
     selectedYear.value = selectedYear.value.set('year', year);
     getRikoniCountPerMonth(year);
   };
+
+  const { showSnackbar, showSnackbarError, errorMessage, errorDetail } =
+    useSnackbarError();
 </script>
 
 <template>
@@ -149,6 +153,12 @@
       :max-y-axis="maxYAxisMonth"
     />
   </v-sheet>
+
+  <SnackbarError
+    v-model="showSnackbar"
+    :error-message="errorMessage"
+    :error-detail="errorDetail"
+  />
 </template>
 
 <style scoped>
