@@ -1,91 +1,41 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
-import HelloWorld from './components/HelloWorld.vue';
+  import { ref } from 'vue';
+
+  const appBarTitle = ref('OnaOna(R)');
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+  <v-app>
+    <v-app-bar class="text-center" :elevation="1">
+      <v-app-bar-title>{{ appBarTitle }}</v-app-bar-title>
+    </v-app-bar>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <v-main>
+      <router-view />
+    </v-main>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+    <v-bottom-navigation :elevation="3" grow height="100">
+      <v-btn @click="appBarTitle = 'OnaOna(R)'" to="/">
+        <v-icon icon="mdi-home" />
+      </v-btn>
 
-  <RouterView />
+      <v-btn @click="appBarTitle = 'カレンダー'" to="/calendar">
+        <v-icon icon="mdi-calendar-month" />
+      </v-btn>
+
+      <v-btn @click="appBarTitle = 'ランキング'" to="/ranking">
+        <v-icon icon="mdi-crown" />
+      </v-btn>
+
+      <v-btn @click="appBarTitle = '統計'" to="statistics">
+        <v-icon icon="mdi-chart-bar" />
+      </v-btn>
+
+      <v-btn @click="appBarTitle = '設定'" to="/settings">
+        <v-icon icon="mdi-cog" />
+      </v-btn>
+    </v-bottom-navigation>
+  </v-app>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+<style scoped></style>
